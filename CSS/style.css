@@ -1,0 +1,29 @@
+body{
+    margin: 0px;
+}
+
+
+.navBar {
+    background-color: #222224;
+    margin: 0;
+    display: flex;
+}
+
+#logoNav {
+    color: #e8bD11;
+    font-size: 10;
+    margin: 5px 5px 5px 50px;
+    font-family: monospace;
+
+}
+
+#imageLogo{
+    width: auto;
+    height: 40px;
+    position: absolute;
+}
+
+.linkLogo{
+    text-decoration: none;
+}
+
