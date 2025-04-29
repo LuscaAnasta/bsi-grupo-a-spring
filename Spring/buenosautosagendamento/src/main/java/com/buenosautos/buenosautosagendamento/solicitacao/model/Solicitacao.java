@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.antlr.v4.runtime.misc.NotNull;
+
 @Entity
 public class Solicitacao {
 

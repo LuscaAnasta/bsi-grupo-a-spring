@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Formulário de Agendamento</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+    }
+    fieldset {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    legend {
+      font-weight: bold;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Formulário de Agendamento</h1>
+
+  
+
+    <form th:action="@{/solicitacao}" method="post">
+        <fieldset>
+            <legend>Veículo</legend>
+            <label for="veiculo-marca">Marca:</label>
+            <input type="text" id="veiculo-marca" name="veiculo-marca" required>
+    
+            <label for="veiculo-modelo">Modelo:</label>
+            <input type="text" id="veiculo-modelo" name="veiculo-modelo" required>
+    
+            <label for="veiculo-ano">Ano:</label>
+            <input type="number" id="veiculo-ano" name="veiculo-ano" min="1900" max="2099" required>
+        </fieldset>
+
+    <fieldset>
+        <legend>Cliente</legend>
+        <label for="cliente-nome">Nome:</label>
+        <input type="text" id="cliente-nome" name="cliente-nome" required>
+
+        <label for="cliente-email">Email:</label>
+        <input type="email" id="cliente-email" name="cliente-email" required>
+
+        <label for="cliente-telefone">Telefone:</label>
+        <input type="tel" id="cliente-telefone" name="cliente-telefone" required>
+
+        <label for="cliente-cpf">CPF:</label>
+        <input type="text" id="cliente-cpf" name="cliente-cpf" required>
+    </fieldset>
+    <fieldset>
+      <legend>Serviço</legend>
+      <table>
+        <thead>
+          <tr>
+            <th>Selecionar</th>
+            <th>Serviço</th>
+            <th>Descrição</th>
+          </tr>
+        </thead>
+        <tbody>
+            <tr th:each="servico : ${servicos}">
+              <td>
+                <input type="checkbox" name="servico" th:id="${'servico-' + servico.codigo}" th:value="${servico.codigo}">
+              </td>
+              <td>
+                <label th:for="${'servico-' + servico.codigo}" th:text="${servico.nome}"></label>
+              </td>
+              <td th:text="${servico.preco}">Preço aqui</td>
+            </tr>
+          </tbody>
+      </table>
+    </fieldset>
+
+    <fieldset>
+        <legend>Agendamento</legend>
+        <label for="agendamento-dia">Dia:</label>
+        <input type="date" id="agendamento-dia" name="agendamento-dia" required>
+
+        <label for="agendamento-horario">Horário:</label>
+        <input type="time" id="agendamento-horario" name="agendamento-horario" required>
+    </fieldset>
+    
+        <!-- Campos do formulário -->
+        <button type="submit">Enviar</button>
+    </form>
+
+</body>
+</html>
