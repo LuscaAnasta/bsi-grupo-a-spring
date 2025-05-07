@@ -2,6 +2,7 @@ package com.buenosautos.buenosautosagendamento.solicitacao.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Solicitacao {
     private Veiculo veiculo;
 
     private LocalDate dataSolicitacao;
-    private String dataAgendada;
+    private LocalDateTime dataAgendada;
 
     // Construtor vazio
     public Solicitacao() {
@@ -32,7 +33,7 @@ public class Solicitacao {
     }
 
     // Construtor com argumentos
-    public Solicitacao(Cliente cliente, ArrayList<Servico> servicos, Veiculo veiculo, String dataAgendada) {
+    public Solicitacao(Cliente cliente, ArrayList<Servico> servicos, Veiculo veiculo, LocalDateTime dataAgendada) {
         this.cliente = cliente;
         this.servicos = servicos;
         this.veiculo = veiculo;
@@ -61,7 +62,7 @@ public class Solicitacao {
         return servicos;
     }
 
-    public void setServicos(ArrayList<Servico> servicos) {
+    public void setServicos(List<Servico> servicos) {
         this.servicos = servicos;
     }
 
@@ -81,11 +82,11 @@ public class Solicitacao {
         this.dataSolicitacao = dataSolicitacao;
     }
 
-    public String getDataAgendada() {
+    public LocalDateTime getDataAgendada() {
         return dataAgendada;
     }
 
-    public void setDataAgendada(String dataAgendada) {
+    public void setDataAgendada(LocalDateTime dataAgendada) {
         this.dataAgendada = dataAgendada;
     }
 }

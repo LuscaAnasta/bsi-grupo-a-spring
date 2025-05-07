@@ -15,19 +15,4 @@ public class BuenosautosagendamentoApplication {
         SpringApplication.run(BuenosautosagendamentoApplication.class, args);
     }
 
-    @Component
-    public static class AppStartupRunner implements CommandLineRunner {
-
-        private final SolicitacaoController solicitacaoController;
-
-        @Autowired
-        public AppStartupRunner(SolicitacaoController solicitacaoController) {
-            this.solicitacaoController = solicitacaoController;
-        }
-
-        @Override
-        public void run(String... args) throws Exception {
-            solicitacaoController.addSolicitacao();
-        }
-    }
 }

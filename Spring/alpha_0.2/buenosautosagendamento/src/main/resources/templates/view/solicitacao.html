@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Solicitação</title>
+</head>
+<body>
+
+    <h1>Formulário de Solicitação</h1>
+    <div th:if="${envio}" style="color:green;">
+        <p th:text="${envio}"></p>
+    </div>
+
+    <form th:action="@{/solicitacao}" method="POST" th:object="${solicitacao}">
+        <!-- Veículo -->
+        <fieldset>
+            <legend>Informações do Veículo</legend>
+            <label>Marca:</label>
+            <input type="text" th:field="*{veiculo.marca}" required><br><br>
+
+            <label>Modelo:</label>
+            <input type="text" th:field="*{veiculo.modelo}" required><br><br>
+
+            <label>Ano:</label>
+            <input type="number" th:field="*{veiculo.ano}" min="1900" max="2100" required><br><br>
+        </fieldset>
+
+        <br>
+
+        <!-- Cliente -->
+        <fieldset>
+            <legend>Informações do Cliente</legend>
+            <label>Nome:</label>
+            <input type="text" th:field="*{cliente.nome}" required><br><br>
+
+            <label>CPF:</label>
+            <input type="text" th:field="*{cliente.cpf}" required><br><br>
+
+            <label>Email:</label>
+            <input type="email" th:field="*{cliente.email}" required><br><br>
+
+            <label>Telefone:</label>
+            <input type="text" th:field="*{cliente.telefone}" required><br><br>
+        </fieldset>
+
+        <br>
+
+        <!-- Serviços -->
+        <fieldset>
+            <legend>Selecione os Serviços</legend>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Serviço</th>
+                        <th>Preço</th>
+                        <th>Selecionar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="servico : ${servicos}">
+                        <td th:text="${servico.nome}"></td>
+                        <td th:text="${servico.preco}"></td>
+                        <td>
+                            <input type="checkbox" name="servicoIds"
+                                   th:value="${servico.id}" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+
+        <br>
+
+        <!-- Data Agendada -->
+        <fieldset>
+            <legend>Data e Hora Agendada</legend>
+            <label for="data">Data:</label>
+            <input type="date" id="data" name="data" required>
+        
+            <label for="hora">Hora:</label>
+            <input type="time" id="hora" name="hora" required>
+        </fieldset>
+
+        <br>
+
+        <!-- Mensagem de erro -->
+        <div th:if="${error}" style="color:red;">
+            <p th:text="${error}"></p>
+        </div>
+
+        <button type="submit">Enviar Solicitação</button>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Página com Botão de Agenda</title>
+  <!-- CDN do Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-yH6KPHp++LbQy+zGNzAwxYo5fK0dHLhIY6O6ZCw3K3C7rNOnVXkBFe4ghWQFz+ZQZ5Qz1Kkx/4rOlYZ7WMaESA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button i {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+    <form th:action="@{/solicitacao}" method="get">
+        <button type="submit">
+          <i class="fas fa-calendar-alt"></i> Ir para Agenda
+        </button>
+      </form>
+</body>
+</html>
