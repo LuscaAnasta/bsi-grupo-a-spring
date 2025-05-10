@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Confirme seus dados</h1>
+
+    <p><strong>Cliente:</strong> <span th:text="${solicitacao.cliente.nome}"></span></p>
+    <p><strong>CPF:</strong> <span th:text="${solicitacao.cliente.cpf}"></span>
+        <strong>EMAIL:</strong> <span th:text="${solicitacao.cliente.email}"></span>
+        <strong>TELEFONE:</strong> <span th:text="${solicitacao.cliente.telefone}"></span>
+    </p>
+    <p><strong>Data Agendada:</strong> <span th:text="${#temporals.format(solicitacao.dataAgendada, 'dd/MM/yyyy HH:mm')}"></span></p>
+
+    
+    <p><b>VEICULO:</b><br>
+        <strong>MARCA:</strong> <span th:text="${solicitacao.veiculo.marca}"></span>
+        <strong>MODELO:</strong> <span th:text="${solicitacao.veiculo.modelo}"></span>
+        <strong>ANO:</strong> <span th:text="${solicitacao.veiculo.ano}"></span>
+    </p>
+    <p><strong>Serviços:</strong></p>
+    <ul>
+        <li th:each="servico : ${solicitacao.servicos}" th:text="${servico.nome + ' - R$ ' + servico.preco}"></li>
+    </ul>
+
+</html>

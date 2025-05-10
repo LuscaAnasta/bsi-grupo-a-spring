@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.expression.Lists;
 
 import com.buenosautos.buenosautosagendamento.solicitacao.model.Cliente;
@@ -55,6 +56,7 @@ public class SolicitacaoController {
 	                                  @RequestParam(value = "servicoIds", required = false) List<Long> servicoIds,
 	                                  @RequestParam("data") String data,
 	                                  @RequestParam("hora") String hora,
+	                                  RedirectAttributes redirectAttributes,
 	                                  Model model) {
 	    // Verificar serviços
 	    if (servicoIds == null || servicoIds.isEmpty()) {
@@ -80,11 +82,18 @@ public class SolicitacaoController {
 	    List<Servico> servicosSelecionados = servicoRepo.findAllById(servicoIds);
 	    solicitacao.setServicos(servicosSelecionados);
 
-	    solicitacao.setDataSolicitacao(LocalDate.now());
 
 	    solicitacaoRepo.save(solicitacao);
-	    model.addAttribute("envio", "Solicitacao realizada com sucesso.");
-	    return "redirect:/view/solicitacaoconfirmar";
+	    redirectAttributes.addFlashAttribute("solicitacao", solicitacao);
+	    
+	    return "redirect:/solicitacao_resposta";
+	}
+	
+	@GetMapping("/solicitacao_resposta")
+	public String confirmarSolicitacao(@ModelAttribute("solicitacao") Solicitacao solicitacao, Model model) {
+	    
+	    model.addAttribute("solicitacao", solicitacao);
+		return "view/solicitacao_confirmar";
 	}
 
 	
