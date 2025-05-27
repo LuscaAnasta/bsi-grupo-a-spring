@@ -2,6 +2,7 @@ package com.buenosautos.buenosautosagendamento.disponibilidade.service;
 
 import com.buenosautos.buenosautosagendamento.disponibilidade.model.Disponibilidade;
 import com.buenosautos.buenosautosagendamento.disponibilidade.repository.DisponibilidadeRepository;
+import com.buenosautos.buenosautosagendamento.disponibilidade.dto.DiaDisponivelDTO; // Adicionado para o DTO de retorno
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,17 +10,24 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit; // Para calcular diferença em dias
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Service // Indica que é um componente de serviço do Spring
+@Service
 public class DisponibilidadeService {
 
     private final DisponibilidadeRepository disponibilidadeRepository;
 
-    // Usamos injeção por construtor, que é uma boa prática
+    // Valores padrão para dias não configurados
+    private final LocalTime HORARIO_INICIO_PADRAO = LocalTime.of(9, 0); // 09:00
+    private final LocalTime HORARIO_FIM_PADRAO = LocalTime.of(17, 0);   // 17:00
+    private final int CAPACIDADE_PADRAO = 4;                            // 4 vagas
+
     @Autowired
     public DisponibilidadeService(DisponibilidadeRepository disponibilidadeRepository) {
         this.disponibilidadeRepository = disponibilidadeRepository;
@@ -27,175 +35,170 @@ public class DisponibilidadeService {
 
     // --- Métodos de Gestão da Disponibilidade (para o usuário/admin) ---
 
-    /**
-     * Define ou atualiza a disponibilidade para um dia específico.
-     * Inclui validação para o limite de 15 dias à frente e horários.
-     * @param dia O dia para o qual a disponibilidade será definida.
-     * @param horarioInicio O horário de início do período de trabalho para o dia.
-     * @param horarioFim O horário de fim do período de trabalho para o dia.
-     * @param capacidadeMaxima A capacidade total de agendamentos para o dia.
-     * @return A entidade Disponibilidade salva/atualizada.
-     * @throws IllegalArgumentException se as regras de negócio forem violadas.
-     */
     @Transactional
     public Disponibilidade definirDisponibilidadeDiaria(LocalDate dia, LocalTime horarioInicio, LocalTime horarioFim, int capacidadeMaxima) {
-        // 1. Validação de Regras de Negócio (15 dias à frente)
         validarPeriodoDefinicao(dia);
 
-        // 2. Validação de Horários
         if (horarioInicio.isAfter(horarioFim) || horarioInicio.equals(horarioFim)) {
-            throw new IllegalArgumentException("O horário de início deve ser anterior ao horário de fim.");
+            throw new IllegalArgumentException("O horário de início (" + horarioInicio + ") deve ser anterior ao horário de fim (" + horarioFim + ").");
         }
-        // Opcional: Validar se o gap mínimo de 1 hora entre inicio e fim está sendo respeitado
-        // if (ChronoUnit.HOURS.between(horarioInicio, horarioFim) < 1) {
-        //     throw new IllegalArgumentException("O intervalo de trabalho deve ser de no mínimo 1 hora.");
-        // }
+        if (ChronoUnit.HOURS.between(horarioInicio, horarioFim) < 1) {
+            throw new IllegalArgumentException("O intervalo de trabalho deve ser de no mínimo 1 hora.");
+        }
 
-
-        // 3. Busca ou Cria a entidade Disponibilidade para o dia
         Optional<Disponibilidade> optDisponibilidade = disponibilidadeRepository.findByDia(dia);
         Disponibilidade disponibilidade;
 
         if (optDisponibilidade.isPresent()) {
             disponibilidade = optDisponibilidade.get();
-            // Evitar sobrescrever contagem de agendamentos se a disponibilidade for atualizada
-            if (disponibilidade.getCapacidadeMaximaDia() != capacidadeMaxima) {
-                // Se a capacidade máxima mudar, talvez você precise de lógica para ajustar agendamentosNoDia
-                // ou apenas permitir a mudança e validar agendamentosNoDia posteriormente.
-                // Por enquanto, apenas atualiza a capacidade.
-                 if (capacidadeMaxima < disponibilidade.getAgendamentosNoDia()) {
-                    throw new IllegalArgumentException("Nova capacidade máxima (" + capacidadeMaxima + ") é menor que os agendamentos já existentes (" + disponibilidade.getAgendamentosNoDia() + ") para o dia " + dia);
-                }
+            // Referência CORRETA para capacidadeMaximaDia
+            if (capacidadeMaxima < disponibilidade.getAgendamentosNoDia()) { 
+                throw new IllegalArgumentException("Nova capacidade máxima (" + capacidadeMaxima + ") é menor que os agendamentos já existentes (" + disponibilidade.getAgendamentosNoDia() + ") para o dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".");
             }
-             System.out.println("Atualizando disponibilidade existente para o dia: " + dia);
+            System.out.println("Atualizando disponibilidade existente para o dia: " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         } else {
             disponibilidade = new Disponibilidade();
             disponibilidade.setDia(dia);
-            System.out.println("Criando nova disponibilidade para o dia: " + dia);
+            System.out.println("Criando nova disponibilidade para o dia: " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
 
-        // 4. Atualiza os detalhes da disponibilidade
         disponibilidade.setHorarioInicio(horarioInicio);
         disponibilidade.setHorarioFim(horarioFim);
+        // Referência CORRETA para capacidadeMaximaDia
         disponibilidade.setCapacidadeMaximaDia(capacidadeMaxima);
-        disponibilidade.setStatusDia(Disponibilidade.StatusDisponibilidadeDiaria.ABERTO); // Sempre ABERTO ao ser definido
+        // Referência CORRETA para StatusDisponibilidadeDiaria
+        disponibilidade.setStatusDia(Disponibilidade.StatusDisponibilidadeDiaria.ABERTO); 
 
         return disponibilidadeRepository.save(disponibilidade);
     }
 
-    /**
-     * Altera o status gerencial de um dia (ABERTO/FECHADO).
-     * @param dia O dia a ser atualizado.
-     * @param novoStatus O novo status desejado.
-     * @return A entidade Disponibilidade atualizada.
-     * @throws IllegalArgumentException se o dia não for encontrado.
-     */
     @Transactional
+    // Referência CORRETA para StatusDisponibilidadeDiaria
     public Disponibilidade alterarStatusDisponibilidade(LocalDate dia, Disponibilidade.StatusDisponibilidadeDiaria novoStatus) {
         Disponibilidade disponibilidade = disponibilidadeRepository.findByDia(dia)
-            .orElseThrow(() -> new IllegalArgumentException("Disponibilidade para o dia " + dia + " não encontrada."));
+            .orElseThrow(() -> new IllegalArgumentException("Disponibilidade para o dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " não encontrada para alteração de status."));
 
+        // Referência CORRETA para statusDia
         disponibilidade.setStatusDia(novoStatus);
         return disponibilidadeRepository.save(disponibilidade);
     }
 
     // --- Métodos de Consulta de Disponibilidade (para o cliente/solicitação) ---
 
-    /**
-     * Consulta a disponibilidade para agendamento em um dia específico.
-     * Retorna o objeto Disponibilidade se o dia estiver agendável, ou Optional.empty().
-     * @param dataDesejada A data para a qual se deseja consultar a disponibilidade.
-     * @return Um Optional contendo a Disponibilidade se estiver disponível para agendamento, ou vazio.
-     */
     public Optional<Disponibilidade> consultarDisponibilidadeParaAgendamento(LocalDate dataDesejada) {
-        Optional<Disponibilidade> optDisponibilidade = disponibilidadeRepository.findByDia(dataDesejada);
+        validarPeriodoDefinicao(dataDesejada); 
 
-        if (optDisponibilidade.isEmpty()) {
-            return Optional.empty(); // Dia não configurado
+        Optional<Disponibilidade> optDisponibilidade = disponibilidadeRepository.findByDia(dataDesejada);
+        Disponibilidade disponibilidadeParaAvaliacao;
+
+        if (optDisponibilidade.isPresent()) {
+            disponibilidadeParaAvaliacao = optDisponibilidade.get();
+        } else {
+            disponibilidadeParaAvaliacao = new Disponibilidade(dataDesejada, HORARIO_INICIO_PADRAO, HORARIO_FIM_PADRAO, CAPACIDADE_PADRAO);
+            System.out.println("Usando disponibilidade padrão para avaliação do dia: " + dataDesejada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         }
 
-        Disponibilidade disponibilidade = optDisponibilidade.get();
-
-        // 1. O dia está gerenciável como ABERTO e não atingiu a capacidade máxima?
-        if (!disponibilidade.estaAbertoParaNovosAgendamentos()) {
-            System.out.println("Dia " + dataDesejada + " não está aberto ou está cheio.");
+        if (!disponibilidadeParaAvaliacao.estaAbertoParaNovosAgendamentos()) {
+            // Referência CORRETA para statusDia e capacidadeMaximaDia
+            System.out.println("Dia " + dataDesejada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " (configurado ou padrão) não está aberto ou está cheio. Status: " + disponibilidadeParaAvaliacao.getStatusDia() + ", Agendamentos: " + disponibilidadeParaAvaliacao.getAgendamentosNoDia() + "/" + disponibilidadeParaAvaliacao.getCapacidadeMaximaDia());
             return Optional.empty();
         }
 
-        // 2. O dia ou o horário de término já passou?
-        if (disponibilidade.jaPassou() || disponibilidade.jaPassouHorarioFinal()) {
-            System.out.println("Dia " + dataDesejada + " já passou.");
+        if (disponibilidadeParaAvaliacao.jaPassouHorarioFinal()) {
+            System.out.println("Dia " + dataDesejada.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " (configurado ou padrão) já passou o horário de fim (" + disponibilidadeParaAvaliacao.getHorarioFim() + ").");
             return Optional.empty();
         }
         
-        return Optional.of(disponibilidade);
+        return Optional.of(disponibilidadeParaAvaliacao);
     }
 
-    /**
-     * Retorna uma lista de dias disponíveis para agendamento nos próximos 15 dias (incluindo o atual).
-     * @return Lista de objetos Disponibilidade para dias agendáveis.
-     */
-    public List<Disponibilidade> listarDiasAgendaveis() {
+    public List<DiaDisponivelDTO> listarDiasComHorariosDisponiveisParaAgendamento() {
         LocalDate hoje = LocalDate.now();
-        LocalDate quinzeDiasAFrente = hoje.plusDays(14); // Hoje + 14 dias = 15 dias no total
+        LocalDate quinzeDiasAFrente = hoje.plusDays(14);
 
-        // O Spring Data JPA pode criar este método automaticamente se você tiver findByDiaBetween
-        // Ou você pode buscar tudo e filtrar em memória se a lista for pequena
-        return disponibilidadeRepository.findByDiaBetween(hoje, quinzeDiasAFrente).stream()
-                .filter(Disponibilidade::estaAbertoParaNovosAgendamentos) // Apenas dias com Status.ABERTO e com vagas
-                .filter(dispo -> !dispo.jaPassou()) // O dia ainda não passou (apenas a data)
-                .filter(dispo -> !dispo.jaPassouHorarioFinal()) // O dia não passou do horário de término
-                .collect(Collectors.toList());
+        List<Disponibilidade> disponibilidadesConfiguradasNoBanco = 
+            disponibilidadeRepository.findByDiaBetween(hoje, quinzeDiasAFrente);
+        
+        Map<LocalDate, Disponibilidade> mapaDisponibilidades = disponibilidadesConfiguradasNoBanco.stream()
+            .collect(Collectors.toMap(Disponibilidade::getDia, d -> d));
+
+        List<DiaDisponivelDTO> diasComHorariosDisponiveis = new ArrayList<>();
+
+        for (long i = 0; i <= 14; i++) {
+            LocalDate diaAtual = hoje.plusDays(i);
+            Disponibilidade dispoParaAvaliacao;
+
+            if (mapaDisponibilidades.containsKey(diaAtual)) {
+                dispoParaAvaliacao = mapaDisponibilidades.get(diaAtual);
+            } else {
+                dispoParaAvaliacao = new Disponibilidade(diaAtual, HORARIO_INICIO_PADRAO, HORARIO_FIM_PADRAO, CAPACIDADE_PADRAO);
+            }
+
+            if (dispoParaAvaliacao.estaAbertoParaNovosAgendamentos() && !dispoParaAvaliacao.jaPassouHorarioFinal()) {
+                List<LocalTime> horariosFixosDoDia = new ArrayList<>();
+                LocalTime horarioGerado = dispoParaAvaliacao.getHorarioInicio();
+                
+                while (horarioGerado.isBefore(dispoParaAvaliacao.getHorarioFim())) {
+                    LocalDateTime momentoFimDoSlot = diaAtual.atTime(horarioGerado.plusHours(1));
+                    if (momentoFimDoSlot.isAfter(LocalDateTime.now())) {
+                         horariosFixosDoDia.add(horarioGerado);
+                    }
+                    horarioGerado = horarioGerado.plusHours(1);
+                }
+
+                if (!horariosFixosDoDia.isEmpty()) {
+                    diasComHorariosDisponiveis.add(new DiaDisponivelDTO(diaAtual, horariosFixosDoDia));
+                }
+            }
+        }
+        return diasComHorariosDisponiveis;
     }
 
     // --- Métodos para Ocupar/Liberar Vagas (chamados por outros serviços/listeners) ---
 
-    /**
-     * Incrementa a contagem de agendamentos para um dia específico.
-     * @param dia A data do agendamento.
-     * @throws IllegalArgumentException se o dia não for encontrado ou não tiver mais capacidade.
-     */
     @Transactional
     public void reservarVagaNoDia(LocalDate dia) {
-        Disponibilidade disponibilidade = disponibilidadeRepository.findByDia(dia)
-            .orElseThrow(() -> new IllegalArgumentException("Disponibilidade para o dia " + dia + " não encontrada para reserva."));
+        Disponibilidade disponibilidade = consultarDisponibilidadeParaAgendamento(dia)
+            .orElseThrow(() -> new IllegalArgumentException("Não foi possível reservar vaga para o dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ": o dia não está disponível ou já passou."));
 
         if (!disponibilidade.estaAbertoParaNovosAgendamentos()) {
-            throw new IllegalStateException("O dia " + dia + " não está aberto ou já atingiu a capacidade máxima para agendamento.");
+            throw new IllegalStateException("O dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " não está aberto ou já atingiu a capacidade máxima para agendamento.");
         }
         
-        disponibilidade.incrementarAgendamentoNoDia();
-        disponibilidadeRepository.save(disponibilidade);
-        System.out.println("Vaga reservada para o dia " + dia + ". Agendamentos no dia: " + disponibilidade.getAgendamentosNoDia());
+        if (disponibilidade.getId() != null) {
+             disponibilidade.incrementarAgendamentoNoDia();
+             disponibilidadeRepository.save(disponibilidade);
+        } else {
+             disponibilidade.incrementarAgendamentoNoDia();
+             disponibilidadeRepository.save(disponibilidade);
+        }
+       
+        // Referência CORRETA para capacidadeMaximaDia
+        System.out.println("Vaga reservada para o dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ". Agendamentos no dia: " + disponibilidade.getAgendamentosNoDia() + "/" + disponibilidade.getCapacidadeMaximaDia());
     }
 
-    /**
-     * Decrementa a contagem de agendamentos para um dia específico.
-     * @param dia A data do agendamento.
-     * @throws IllegalArgumentException se o dia não for encontrado.
-     */
     @Transactional
     public void liberarVagaNoDia(LocalDate dia) {
         Disponibilidade disponibilidade = disponibilidadeRepository.findByDia(dia)
-            .orElseThrow(() -> new IllegalArgumentException("Disponibilidade para o dia " + dia + " não encontrada para liberação."));
+            .orElseThrow(() -> new IllegalArgumentException("Disponibilidade para o dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " não encontrada para liberação."));
         
-        disponibilidade.decrementarAgendamentoNoDia(); // Assumindo que você corrigirá o método na entidade
+        disponibilidade.decrementarAgendamentoNoDia(); 
         disponibilidadeRepository.save(disponibilidade);
-        System.out.println("Vaga liberada para o dia " + dia + ". Agendamentos no dia: " + disponibilidade.getAgendamentosNoDia());
+        // Referência CORRETA para capacidadeMaximaDia
+        System.out.println("Vaga liberada para o dia " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ". Agendamentos no dia: " + disponibilidade.getAgendamentosNoDia() + "/" + disponibilidade.getCapacidadeMaximaDia());
     }
-
 
     // --- Métodos Auxiliares de Validação ---
 
     private void validarPeriodoDefinicao(LocalDate dia) {
         LocalDate hoje = LocalDate.now();
-        LocalDate limiteSuperior = hoje.plusDays(14); // 15 dias incluindo o atual (hoje + 14)
+        LocalDate limiteSuperior = hoje.plusDays(14);
 
         if (dia.isBefore(hoje)) {
-            throw new IllegalArgumentException("Não é possível definir disponibilidade para dias passados.");
+            throw new IllegalArgumentException("Não é possível definir disponibilidade para dias passados. Data informada: " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".");
         }
         if (dia.isAfter(limiteSuperior)) {
-            throw new IllegalArgumentException("Não é possível definir disponibilidade para mais de 15 dias à frente.");
+            throw new IllegalArgumentException("Não é possível definir disponibilidade para mais de 15 dias à frente. Data informada: " + dia.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ", limite: " + limiteSuperior.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + ".");
         }
     }
 }

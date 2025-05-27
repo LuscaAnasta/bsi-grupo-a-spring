@@ -5,95 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nova Solicitação de Agendamento</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-        }
-        h1, h2 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .section-title {
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
-        }
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="tel"],
-        .form-group input[type="datetime-local"] {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-        .form-group input[type="checkbox"] {
-            margin-right: 8px;
-        }
-        button[type="submit"] {
-            background-color: #28a745;
-            color: white;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            margin-top: 20px;
-        }
-        button[type="submit"]:hover {
-            background-color: #218838;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-        .success-message {
-            color: #28a745;
-            font-size: 0.9em;
-            margin-top: 5px;
-        }
-        .service-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .service-table th, .service-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        .service-table th {
-            background-color: #f2f2f2;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; }
+        h1, h2 { color: #333; text-align: center; margin-bottom: 20px; }
+        .section-title { border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-top: 30px; margin-bottom: 20px; color: #007bff; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group select, .form-group textarea { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
+        button[type="submit"] { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; width: 100%; margin-top: 10px; }
+        button[type="submit"]:hover { background-color: #218838; }
+        .error-message { color: #dc3545; font-size: 0.9em; margin-top: 5px; }
+        .success-message { color: #28a745; font-size: 0.9em; margin-top: 5px; }
+        .service-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .service-table th, .service-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .service-table th { background-color: #f2f2f2; }
     </style>
 </head>
 <body>
@@ -180,13 +105,91 @@
 
             <h2 class="section-title">Informações do Agendamento</h2>
             <div class="form-group">
-                <label for="dataAgendada">Data e Hora do Agendamento:</label>
-                <input type="datetime-local" id="dataAgendada" th:field="*{dataAgendada}" required>
-                <p th:if="${#fields.hasErrors('dataAgendada')}" th:errors="*{dataAgendada}" class="error-message"></p>
+                <label for="dataAgendadaDia">Data do Agendamento:</label>
+                <select id="dataAgendadaDia" th:field="*{dataAgendadaDia}" required onchange="popularHorarios()">
+                    <option value="">-- Selecione um dia disponível --</option>
+                    <option th:each="diaDisponivel : ${diasComHorariosDisponiveis}" 
+                            th:value="${diaDisponivel.dia}" 
+                            th:text="${#temporals.format(diaDisponivel.dia, 'dd/MM/yyyy')}">
+                    </option>
+                </select>
+                <p th:if="${#fields.hasErrors('dataAgendadaDia')}" th:errors="*{dataAgendadaDia}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="horarioAgendado">Horário do Agendamento:</label>
+                <select id="horarioAgendado" th:field="*{horarioAgendado}" required>
+                    <option value="">-- Selecione um horário --</option>
+                    </select>
+                <p th:if="${#fields.hasErrors('horarioAgendado')}" th:errors="*{horarioAgendado}" class="error-message"></p>
             </div>
 
-            <button type="submit">Enviar Solicitação</button>
+            <button type="submit">Prosseguir para Confirmação</button>
         </form>
     </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // Dados de disponibilidade passados do controlador para o JavaScript
+        var diasComHorarios = [[${diasComHorariosDisponiveis}]];
+
+        function popularHorarios() {
+            var dataSelect = document.getElementById('dataAgendadaDia');
+            var horarioSelect = document.getElementById('horarioAgendado');
+            var selectedDate = dataSelect.value; // Formato YYYY-MM-DD
+
+            // Limpa as opções atuais do select de horários
+            horarioSelect.innerHTML = '<option value="">-- Selecione um horário --</option>';
+            horarioSelect.disabled = true; // Desabilita até ter horários
+
+            if (selectedDate) {
+                // Encontra o objeto de dia correspondente na lista de diasComHorarios
+                var diaEncontrado = diasComHorarios.find(function(diaDto) {
+                    return diaDto.dia === selectedDate;
+                });
+
+                if (diaEncontrado && diaEncontrado.horariosDisponiveis.length > 0) {
+                    // Preenche o select de horários com as opções disponíveis para o dia
+                    diaEncontrado.horariosDisponiveis.forEach(function(horario) {
+                        var option = document.createElement('option');
+                        option.value = horario; // Valor HH:MM
+                        option.textContent = horario; // Texto visível HH:MM
+                        horarioSelect.appendChild(option);
+                    });
+                    horarioSelect.disabled = false; // Habilita o select
+                } else {
+                    // Mensagem se não houver horários para o dia selecionado (improvável com a lógica do service)
+                    var option = document.createElement('option');
+                    option.value = "";
+                    option.textContent = "-- Nenhum horário disponível para este dia --";
+                    horarioSelect.appendChild(option);
+                }
+            }
+             // Tenta selecionar o primeiro horário disponível, se houver
+            if (horarioSelect.options.length > 1) {
+                horarioSelect.selectedIndex = 1; 
+            }
+        }
+
+        // Chama popularHorarios() quando a página carrega para preencher o campo se já houver um dia selecionado
+        // (ex: em caso de erro de validação do formulário, onde os dados são repopulados)
+        document.addEventListener('DOMContentLoaded', function() {
+            popularHorarios();
+            // Adicionalmente, se o formulário foi repopulado por um erro, 
+            // e já tem uma data e horário selecionados, tente re-selecionar
+            var dataAgendadaDiaValue = [[${solicitacaoForm.dataAgendadaDia}]] ? [[${#temporals.format(solicitacaoForm.dataAgendadaDia, 'yyyy-MM-dd')}]] : null;
+            var horarioAgendadoValue = [[${solicitacaoForm.horarioAgendado}]] ? [[${#temporals.format(solicitacaoForm.horarioAgendado, 'HH:mm')}]] : null;
+
+            if (dataAgendadaDiaValue) {
+                document.getElementById('dataAgendadaDia').value = dataAgendadaDiaValue;
+                // Popular novamente para garantir que os horários corretos sejam carregados
+                popularHorarios(); 
+                if (horarioAgendadoValue) {
+                    document.getElementById('horarioAgendado').value = horarioAgendadoValue;
+                }
+            }
+        });
+
+        /*]]>*/
+    </script>
 </body>
 </html>

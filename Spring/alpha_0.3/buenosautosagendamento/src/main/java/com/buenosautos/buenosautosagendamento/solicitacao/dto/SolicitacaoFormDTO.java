@@ -1,15 +1,16 @@
 package com.buenosautos.buenosautosagendamento.solicitacao.dto;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-// Importar as anotações de validação Jakarta
-import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Email;
+
+import java.time.LocalDate; // NOVO IMPORT
+import java.time.LocalTime; // NOVO IMPORT
+import java.util.ArrayList;
+import java.util.List;
 
 public class SolicitacaoFormDTO {
 
@@ -41,38 +42,42 @@ public class SolicitacaoFormDTO {
     @Pattern(regexp = "\\d{4}", message = "Ano inválido. Use o formato AAAA (ex: 2023)")
     private String veiculoAno;
     
-    @NotBlank(message = "A placa do veículo é obrigatória") // Mantendo apenas NotBlank
+    @NotBlank(message = "A placa do veículo é obrigatória")
     private String veiculoPlaca;
 
     // IDs dos serviços selecionados
     @NotNull(message = "Selecione pelo menos um serviço")
     @Size(min = 1, message = "Selecione pelo menos um serviço")
-    private List<Long> servicoIds;
+    private List<Long> servicoIds = new ArrayList<>();
 
-    // Dados do Agendamento
-    @NotNull(message = "A data e hora do agendamento são obrigatórias")
+    // Dados do Agendamento (AGORA SEPARADOS)
+    @NotNull(message = "A data do agendamento é obrigatória")
     @FutureOrPresent(message = "A data do agendamento deve ser no presente ou futuro")
-    private LocalDateTime dataAgendada;
+    private LocalDate dataAgendadaDia; // Campo para a data
+
+    @NotNull(message = "O horário do agendamento é obrigatório")
+    private LocalTime horarioAgendado; // Campo para o horário
 
     public SolicitacaoFormDTO() {}
 
-    // Construtor completo (opcional, para testes ou inicialização programática)
+    // Construtor completo (ATUALIZADO)
     public SolicitacaoFormDTO(String clienteNome, String clienteCpf, String clienteEmail, String clienteTelefone,
-            String veiculoMarca, String veiculoModelo, String veiculoAno, String veiculoPlaca, // NOVO PARÂMETRO
-            List<Long> servicoIds, LocalDateTime dataAgendada) {
-			this.clienteNome = clienteNome;
-			this.clienteCpf = clienteCpf;
-			this.clienteEmail = clienteEmail;
-			this.clienteTelefone = clienteTelefone;
-			this.veiculoMarca = veiculoMarca;
-			this.veiculoModelo = veiculoModelo;
-			this.veiculoAno = veiculoAno;
-			this.veiculoPlaca = veiculoPlaca; // Inicializa o novo campo
-			this.servicoIds = servicoIds;
-			this.dataAgendada = dataAgendada;
-			}
+                              String veiculoMarca, String veiculoModelo, String veiculoAno, String veiculoPlaca,
+                              List<Long> servicoIds, LocalDate dataAgendadaDia, LocalTime horarioAgendado) {
+        this.clienteNome = clienteNome;
+        this.clienteCpf = clienteCpf;
+        this.clienteEmail = clienteEmail;
+        this.clienteTelefone = clienteTelefone;
+        this.veiculoMarca = veiculoMarca;
+        this.veiculoModelo = veiculoModelo;
+        this.veiculoAno = veiculoAno;
+        this.veiculoPlaca = veiculoPlaca;
+        this.servicoIds = (servicoIds != null) ? new ArrayList<>(servicoIds) : new ArrayList<>(); 
+        this.dataAgendadaDia = dataAgendadaDia; // ATUALIZADO AQUI
+        this.horarioAgendado = horarioAgendado; // NOVO CAMPO
+    }
 
-    // --- Getters e Setters para todos os campos ---
+    // --- Getters e Setters ---
     public String getClienteNome() { return clienteNome; }
     public void setClienteNome(String clienteNome) { this.clienteNome = clienteNome; }
     public String getClienteCpf() { return clienteCpf; }
@@ -87,18 +92,16 @@ public class SolicitacaoFormDTO {
     public void setVeiculoModelo(String veiculoModelo) { this.veiculoModelo = veiculoModelo; }
     public String getVeiculoAno() { return veiculoAno; }
     public void setVeiculoAno(String veiculoAno) { this.veiculoAno = veiculoAno; }
+    public String getVeiculoPlaca() { return veiculoPlaca; }
+    public void setVeiculoPlaca(String veiculoPlaca) { this.veiculoPlaca = veiculoPlaca; }
     public List<Long> getServicoIds() { return servicoIds; }
     public void setServicoIds(List<Long> servicoIds) { this.servicoIds = servicoIds; }
-    public LocalDateTime getDataAgendada() { return dataAgendada; }
-    public void setDataAgendada(LocalDateTime dataAgendada) { this.dataAgendada = dataAgendada; }
-    
-    public String getVeiculoPlaca() { // NOVO GETTER
-        return veiculoPlaca;
-    }
 
-    public void setVeiculoPlaca(String veiculoPlaca) { // NOVO SETTER
-        this.veiculoPlaca = veiculoPlaca;
-    }
+    public LocalDate getDataAgendadaDia() { return dataAgendadaDia; }
+    public void setDataAgendadaDia(LocalDate dataAgendadaDia) { this.dataAgendadaDia = dataAgendadaDia; }
+
+    public LocalTime getHorarioAgendado() { return horarioAgendado; }
+    public void setHorarioAgendado(LocalTime horarioAgendado) { this.horarioAgendado = horarioAgendado; }
 
     @Override
     public String toString() {
@@ -110,8 +113,10 @@ public class SolicitacaoFormDTO {
                ", veiculoMarca='" + veiculoMarca + '\'' +
                ", veiculoModelo='" + veiculoModelo + '\'' +
                ", veiculoAno='" + veiculoAno + '\'' +
+               ", veiculoPlaca='" + veiculoPlaca + '\'' +
                ", servicoIds=" + servicoIds +
-               ", dataAgendada=" + dataAgendada +
+               ", dataAgendadaDia=" + dataAgendadaDia + // ATUALIZADO AQUI
+               ", horarioAgendado=" + horarioAgendado + // NOVO CAMPO
                '}';
     }
 }
