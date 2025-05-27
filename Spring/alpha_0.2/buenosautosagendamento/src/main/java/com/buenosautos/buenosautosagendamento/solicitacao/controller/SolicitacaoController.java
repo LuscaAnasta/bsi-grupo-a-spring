@@ -16,14 +16,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.expression.Lists;
 
+import com.buenosautos.buenosautosagendamento.modelos.ServicoModelo;
 import com.buenosautos.buenosautosagendamento.solicitacao.model.Cliente;
-import com.buenosautos.buenosautosagendamento.solicitacao.model.Servico;
+import com.buenosautos.buenosautosagendamento.solicitacao.model.ServicoCliente;
+import com.buenosautos.buenosautosagendamento.solicitacao.model.ServicoLocal;
 import com.buenosautos.buenosautosagendamento.solicitacao.model.Solicitacao;
+import com.buenosautos.buenosautosagendamento.solicitacao.model.SolicitacaoLocal;
 import com.buenosautos.buenosautosagendamento.solicitacao.model.Veiculo;
-import com.buenosautos.buenosautosagendamento.solicitacao.repository.ServicoRepository;
+import com.buenosautos.buenosautosagendamento.solicitacao.repository.ServicoClienteRepository;
 import com.buenosautos.buenosautosagendamento.solicitacao.repository.SolicitacaoRepository;
 import jakarta.validation.Valid;
 
@@ -39,16 +43,19 @@ public class SolicitacaoController {
 	private SolicitacaoRepository solicitacaoRepo;
 	
 	@Autowired 
-	private ServicoRepository servicoRepo;
+	private ServicoClienteRepository servicoRepo;
+	
+	@Autowired
+	private RestTemplate restTemplate;
 	
 	
 	@GetMapping("/solicitacao")
     public String mostrarFormulario(Model model) {
       
-        List<Servico> servicos = servicoRepo.findAll();
+        List<ServicoCliente> servicos = servicoRepo.findAll();
         model.addAttribute("servicos", servicos);
         model.addAttribute("solicitacao", new Solicitacao());
-        return "view/solicitacao";
+        return "view/solicitacao/solicitacao";
     }
 	
 	@PostMapping("/solicitacao")
@@ -63,7 +70,7 @@ public class SolicitacaoController {
 	        model.addAttribute("error", "Pelo menos um serviço deve ser selecionado.");
 	        model.addAttribute("servicos", servicoRepo.findAll());
 	        model.addAttribute("solicitacao", solicitacao);
-	        return "view/solicitacao";
+	        return "view/solicitacao/solicitacao";
 	    }
 
 	    // Parse da data e hora para LocalDateTime
@@ -75,26 +82,29 @@ public class SolicitacaoController {
 	        model.addAttribute("error", "Data ou hora inválida.");
 	        model.addAttribute("servicos", servicoRepo.findAll());
 	        model.addAttribute("solicitacao", solicitacao);
-	        return "view/solicitacao";
+	        return "view/solicitacao/solicitacao";
 	    }
 
 	    // Setar serviços
-	    List<Servico> servicosSelecionados = servicoRepo.findAllById(servicoIds);
+	    List<ServicoCliente> servicosSelecionados = servicoRepo.findAllById(servicoIds);
 	    solicitacao.setServicos(servicosSelecionados);
-
 
 	    solicitacaoRepo.save(solicitacao);
 	    redirectAttributes.addFlashAttribute("solicitacao", solicitacao);
 	    
-	    return "redirect:/solicitacao_resposta";
+	    return "redirect:/solicitacao/solicitacao_resposta";
 	}
 	
 	@GetMapping("/solicitacao_resposta")
 	public String confirmarSolicitacao(@ModelAttribute("solicitacao") Solicitacao solicitacao, Model model) {
 	    
+		SolicitacaoLocal sLocal = new SolicitacaoLocal();
+		sLocal = sLocal.toSolicitacaoLocal(solicitacao);
 	    model.addAttribute("solicitacao", solicitacao);
-		return "view/solicitacao_confirmar";
+		return "view/solicitacao/solicitacao_confirmar";
 	}
+	
+	
 
 	
 	public void addSolicitacao() {
@@ -123,8 +133,8 @@ public class SolicitacaoController {
 		
 	}
 	
-	public List<Servico> retorneServico(){
-		List<Servico> ss = new ArrayList<>();
+	public List<ServicoCliente> retorneServico(){
+		List<ServicoCliente> ss = new ArrayList<>();
 		ss = servicoRepo.findAll();
 		return ss;
 	}
@@ -132,6 +142,6 @@ public class SolicitacaoController {
 	@GetMapping("/solicitacaoteste")
 	public String greeting() {
 		addSolicitacao();
-		return "view/solicitacao_teste";
+		return "view/solicitacao/solicitacao_teste";
 	}
 }

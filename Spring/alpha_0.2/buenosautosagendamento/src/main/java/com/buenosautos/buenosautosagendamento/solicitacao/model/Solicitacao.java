@@ -19,7 +19,7 @@ public class Solicitacao {
     private Cliente cliente;
 
     @ManyToMany
-    private List<Servico> servicos;
+    private List<ServicoCliente> servicos;
 
     @ManyToOne(cascade = CascadeType.ALL)
     private Veiculo veiculo;
@@ -33,7 +33,7 @@ public class Solicitacao {
     }
 
     // Construtor com argumentos
-    public Solicitacao(Cliente cliente, ArrayList<Servico> servicos, Veiculo veiculo, LocalDateTime dataAgendada) {
+    public Solicitacao(Cliente cliente, ArrayList<ServicoCliente> servicos, Veiculo veiculo, LocalDateTime dataAgendada) {
         this.cliente = cliente;
         this.servicos = servicos;
         this.veiculo = veiculo;
@@ -58,11 +58,11 @@ public class Solicitacao {
         this.cliente = cliente;
     }
 
-    public List<Servico> getServicos() {
+    public List<ServicoCliente> getServicos() {
         return servicos;
     }
 
-    public void setServicos(List<Servico> servicos) {
+    public void setServicos(List<ServicoCliente> servicos) {
         this.servicos = servicos;
     }
 

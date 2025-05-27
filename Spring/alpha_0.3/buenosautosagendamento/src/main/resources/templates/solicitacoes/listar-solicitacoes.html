@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Solicitações - Buenos Autos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px; /* Mais largo para mais colunas */
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: left;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top; /* Alinha o conteúdo ao topo */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #555;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .service-list {
+            list-style: none; /* Remove marcadores de lista */
+            padding: 0;
+            margin: 0;
+        }
+        .service-list li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Últimas Solicitações</h1>
+
+        <a th:href="@{/dashboard}" class="back-link">Voltar ao Dashboard</a>
+
+        <div th:if="${#lists.isEmpty(solicitacoes)}" class="no-data">
+            <p>Nenhuma solicitação encontrada.</p>
+        </div>
+        <table th:unless="${#lists.isEmpty(solicitacoes)}">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Veículo</th>
+                    <th>Serviços Solicitados</th>
+                    <th>Data Solicitação</th>
+                    <th>Data Agendada</th>
+                    </tr>
+            </thead>
+            <tbody>
+                <tr th:each="solicitacao : ${solicitacoes}">
+                    <td th:text="${solicitacao.id}"></td>
+                    <td>
+                        <span th:text="${solicitacao.cliente.nome}"></span><br>
+                        <small th:text="${solicitacao.cliente.cpf}"></small>
+                    </td>
+                    <td>
+                        <span th:text="${solicitacao.veiculo.marca + ' ' + solicitacao.veiculo.modelo}"></span><br>
+                        <small th:text="${solicitacao.veiculo.ano}"></small>
+                    </td>
+                    <td>
+                        <ul class="service-list">
+                            <li th:each="servico : ${solicitacao.servicos}">
+                                <span th:text="${servico.nome}"></span> (<span th:text="${servico.codigo}"></span>)
+                            </li>
+                        </ul>
+                    </td>
+                    <td th:text="${#temporals.format(solicitacao.dataSolicitacao, 'dd/MM/yyyy')}"></td>
+                    <td th:text="${#temporals.format(solicitacao.dataAgendada, 'dd/MM/yyyy HH:mm')}"></td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

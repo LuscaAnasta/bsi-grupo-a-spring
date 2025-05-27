@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Protocolo - Consulta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: left;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 15px;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+        }
+
+        .detail-item strong {
+            display: inline-block;
+            width: 180px; /* Aumentado para melhor alinhamento */
+            color: #555;
+        }
+
+        .service-list {
+            list-style: decimal;
+            padding-left: 20px;
+            margin: 0;
+        }
+        .service-list li {
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .service-list li small {
+            color: #777;
+        }
+
+        /* Estilos para o status (opcional, para destaque visual) */
+        .status-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff; /* Padrão */
+        }
+        .status-AGUARDANDO_CONFIRMACAO_MECANICO { background-color: #ffc107; color: #343a40;} /* Amarelo */
+        .status-CONFIRMADO { background-color: #28a745; } /* Verde */
+        .status-EM_EXECUCAO { background-color: #17a2b8; } /* Azul-claro */
+        .status-AGUARDANDO_PECAS { background-color: #fd7e14; } /* Laranja */
+        .status-CONCLUIDO { background-color: #6f42c1; } /* Roxo */
+        .status-CANCELADO { background-color: #dc3545; } /* Vermelho */
+        .status-NAO_COMPARECEU { background-color: #6c757d; } /* Cinza */
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a th:href="@{/protocolos/consultar}" class="back-link">Voltar para a Consulta de Protocolos</a>
+
+        <h1>Detalhes do Protocolo <span th:text="${protocolo.numeroProtocolo}"></span></h1>
+
+        <div class="detail-section">
+            <h3>Informações Gerais</h3>
+            <div class="detail-item"><strong>Número do Protocolo:</strong> <span th:text="${protocolo.numeroProtocolo}"></span></div>
+            <div class="detail-item"><strong>Status Atual:</strong> 
+                <span class="status-tag" th:classappend="'status-' + ${protocolo.statusProtocolo.name()}" th:text="${protocolo.statusProtocolo.name().replace('_', ' ')}"></span>
+            </div>
+            <div class="detail-item"><strong>Data do Protocolo:</strong> <span th:text="${#temporals.format(protocolo.dataProtocolo, 'dd/MM/yyyy')}"></span></div>
+            <div class="detail-item"><strong>Data Agendada:</strong> <span th:text="${#temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy')}"></span></div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Dados da Solicitação</h3>
+            <div class="detail-item"><strong>Cliente:</strong> <span th:text="${protocolo.solicitacao.nome}"></span> (<span th:text="${protocolo.solicitacao.cpf}"></span>)</div>
+            <div class="detail-item"><strong>Contato:</strong> <span th:text="${protocolo.solicitacao.email}"></span> / <span th:text="${protocolo.solicitacao.telefone}"></span></div>
+            <div class="detail-item"><strong>Veículo:</strong> <span th:text="${protocolo.solicitacao.marca + ' ' + protocolo.solicitacao.modelo + ' (' + protocolo.solicitacao.ano + ')'}"></span></div>
+            <div class="detail-item"><strong>Data Solicitada:</strong> <span th:text="${#temporals.format(protocolo.solicitacao.dataSolicitacao, 'dd/MM/yyyy')}"></span></div>
+            <div class="detail-item"><strong>Hora Agendada Original:</strong> <span th:text="${#temporals.format(protocolo.solicitacao.dataAgendada, 'HH:mm')}"></span></div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Serviços Protocolados</h3>
+            <div th:if="${#lists.isEmpty(protocolo.servicosProtocolo)}">
+                <p>Nenhum serviço associado a este protocolo.</p>
+            </div>
+            <ol class="service-list" th:unless="${#lists.isEmpty(protocolo.servicosProtocolo)}">
+                <li th:each="item : ${protocolo.servicosProtocolo}">
+                    <strong><span th:text="${item.servicoLocal.nome}"></span></strong> (Código: <span th:text="${item.servicoLocal.codigo}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.servicoLocal.preco, 1, 2)}"></span>)<br>
+                    <small th:if="${item.observacoes}">Observações: <span th:text="${item.observacoes}"></span></small>
+                </li>
+            </ol>
+        </div>
+    </div>
+</body>
+</html>

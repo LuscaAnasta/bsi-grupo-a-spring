@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Protocolo - Buenos Autos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: left;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 15px;
+        }
+
+        .detail-section:last-child {
+            border-bottom: none;
+        }
+
+        .detail-section h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+        }
+
+        .detail-item strong {
+            display: inline-block;
+            width: 150px;
+            color: #555;
+        }
+
+        .service-list {
+            list-style: decimal;
+            padding-left: 20px;
+            margin: 0;
+        }
+        .service-list li {
+            margin-bottom: 5px;
+            color: #333;
+            display: flex; /* Para alinhar o texto e o botão 'x' */
+            align-items: center;
+            justify-content: space-between; /* Para empurrar o 'x' para a direita */
+        }
+        .service-list li small {
+            color: #777;
+        }
+        .remove-service-btn {
+            background-color: #dc3545; /* Vermelho */
+            color: white;
+            border: none;
+            border-radius: 50%; /* Faz um círculo */
+            width: 25px;
+            height: 25px;
+            line-height: 25px; /* Centraliza o 'x' verticalmente */
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+            flex-shrink: 0; /* Não deixa o botão encolher */
+        }
+        .remove-service-btn:hover {
+            background-color: #c82333;
+        }
+
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .form-group select,
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group button, .button-group a {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none; /* Para links */
+            transition: background-color 0.3s ease;
+            display: inline-flex; /* Para botões e links no mesmo grupo */
+            align-items: center;
+            justify-content: center;
+        }
+
+        .button-group .save-button, .button-group .submit-button {
+            background-color: #28a745; /* Verde */
+            color: white;
+        }
+
+        .button-group .save-button:hover, .button-group .submit-button:hover {
+            background-color: #218838;
+        }
+
+        .button-group .cancel-button {
+            background-color: #dc3545; /* Vermelho */
+            color: white;
+        }
+
+        .button-group .cancel-button:hover {
+            background-color: #c82333;
+        }
+
+        .alert-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        fieldset {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        legend {
+            font-weight: bold;
+            color: #007bff;
+            padding: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a th:href="@{/protocolos/listar}" class="back-link">Voltar para Gerenciar Protocolos</a>
+
+        <h1>Detalhes do Protocolo <span th:text="${protocolo.numeroProtocolo}"></span></h1>
+
+        <div th:if="${mensagemSucesso}" class="alert-message alert-success" th:text="${mensagemSucesso}"></div>
+        <div th:if="${mensagemErro}" class="alert-message alert-error" th:text="${mensagemErro}"></div>
+
+        <div class="detail-section">
+            <h3>Informações Gerais</h3>
+            <div class="detail-item"><strong>ID Interno:</strong> <span th:text="${protocolo.id}"></span></div>
+            <div class="detail-item"><strong>Número do Protocolo:</strong> <span th:text="${protocolo.numeroProtocolo}"></span></div>
+            <div class="detail-item"><strong>Data do Protocolo:</strong> <span th:text="${#temporals.format(protocolo.dataProtocolo, 'dd/MM/yyyy')}"></span></div>
+            <div class="detail-item"><strong>Data Agendada:</strong> <span th:text="${#temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy')}"></span></div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Dados da Solicitação</h3>
+            <div class="detail-item"><strong>Solicitação ID:</strong> <span th:text="${protocolo.solicitacao.id}"></span></div>
+            <div class="detail-item"><strong>Cliente:</strong> <span th:text="${protocolo.solicitacao.nome}"></span> (<span th:text="${protocolo.solicitacao.cpf}"></span>)</div>
+            <div class="detail-item"><strong>Contato:</strong> <span th:text="${protocolo.solicitacao.email}"></span> / <span th:text="${protocolo.solicitacao.telefone}"></span></div>
+            <div class="detail-item"><strong>Veículo:</strong> <span th:text="${protocolo.solicitacao.marca + ' ' + protocolo.solicitacao.modelo + ' (' + protocolo.solicitacao.ano + ')'}"></span></div>
+            <div class="detail-item"><strong>Placa:</strong> <span th:text="${protocolo.solicitacao.placa}"></span></div>
+            <div class="detail-item"><strong>Data Solicitada:</strong> <span th:text="${#temporals.format(protocolo.solicitacao.dataSolicitacao, 'dd/MM/yyyy HH:mm')}"></span></div>
+            <div class="detail-item"><strong>Data Agendamento Original:</strong> <span th:text="${#temporals.format(protocolo.solicitacao.dataAgendada, 'dd/MM/yyyy HH:mm')}"></span></div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Serviços Protocolados</h3>
+            <div th:if="${#lists.isEmpty(protocolo.servicosProtocolo)}">
+                <p>Nenhum serviço associado a este protocolo.</p>
+            </div>
+            <ol class="service-list" th:unless="${#lists.isEmpty(protocolo.servicosProtocolo)}">
+                <li th:each="item : ${protocolo.servicosProtocolo}">
+                    <div>
+                        <strong><span th:text="${item.servicoLocal.nome}"></span></strong> 
+                        (Código: <span th:text="${item.servicoLocal.codigo}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.servicoLocal.preco, 1, 2)}"></span>)<br>
+                        <small th:if="${item.observacoes}">Observações: <span th:text="${item.observacoes}"></span></small>
+                    </div>
+                    <form th:action="@{/protocolos/remover-servico-item/{protocoloId}/{itemId}(protocoloId=${protocolo.id}, itemId=${item.id})}" method="post"
+                          onsubmit="return confirm('Tem certeza que deseja remover este serviço do protocolo?');"
+                          th:if="${protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO && protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                        <button type="submit" class="remove-service-btn">X</button>
+                    </form>
+                </li>
+            </ol>
+        </div>
+
+        <div class="detail-section" th:if="${protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO && protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+            <h3>Adicionar Serviço ao Protocolo</h3>
+            <form th:action="@{/protocolos/adicionar-servico-direto/{protocoloId}(protocoloId=${protocolo.id})}" method="post">
+                <fieldset>
+                    <legend>Adicionar Serviço Existente</legend>
+                    <div class="form-group">
+                        <label for="servicoExistenteId">Selecionar Serviço:</label>
+                        <select id="servicoExistenteId" name="servicoExistenteId" onchange="toggleNovoServicoFields()">
+                            <option value="">-- Selecione um serviço existente --</option>
+                            <option th:each="servico : ${servicosDisponiveis}" 
+                                    th:value="${servico.id}" 
+                                    th:text="${servico.nome + ' (R$ ' + #numbers.formatDecimal(servico.preco, 1, 2) + ')'}"></option>
+                        </select>
+                    </div>
+                </fieldset>
+
+                <fieldset id="novoServicoSection">
+                    <legend>Ou Criar Novo Serviço Dinâmico</legend>
+                    <div class="form-group">
+                        <label for="novoServicoNome">Nome do Novo Serviço:</label>
+                        <input type="text" id="novoServicoNome" name="novoServicoNome">
+                    </div>
+                    <div class="form-group">
+                        <label for="novoServicoPreco">Preço do Novo Serviço (R$):</label>
+                        <input type="number" step="0.01" id="novoServicoPreco" name="novoServicoPreco">
+                    </div>
+                </fieldset>
+
+                <div class="form-group">
+                    <label for="observacoesNovoServico">Observações para este Serviço no Protocolo:</label>
+                    <textarea id="observacoesNovoServico" name="observacoesNovoServico" rows="3"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="submit-button">Adicionar Serviço</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="detail-section">
+            <h3>Gerenciar Status do Protocolo</h3>
+            <form th:action="@{/protocolos/salvar-status/{id}(id=${protocolo.id})}" method="post">
+                <div class="form-group">
+                    <label for="statusProtocolo">Alterar Status:</label>
+                    <select id="statusProtocolo" name="novoStatus">
+                        <option th:each="status : ${statusOptions}" 
+                                th:value="${status}" 
+                                th:text="${status.name().replace('_', ' ')}" 
+                                th:selected="${status == protocolo.statusProtocolo}">Status</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="save-button">Salvar Alterações</button>
+                </div>
+            </form>
+
+            <form th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
+                  onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja CANCELAR este protocolo? Essa ação é irreversível.');"
+                  th:if="${protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO && protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO}">
+                <div class="button-group">
+                    <button type="submit" class="cancel-button">Cancelar Protocolo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var currentStatus = [[${protocolo.statusProtocolo}]];
+        var selectElement = document.getElementById('statusProtocolo');
+        var saveButton = document.querySelector('.save-button');
+        var cancelButton = document.querySelector('.cancel-button');
+        var addServiceSection = document.querySelector('.detail-section:nth-child(4)'); // A seção de adicionar serviço
+
+        // Desabilita formulário de status e botão de salvar se o protocolo for CANCELADO ou CONCLUIDO
+        if (currentStatus === 'CANCELADO' || currentStatus === 'CONCLUIDO') {
+            if (selectElement) {
+                selectElement.disabled = true;
+            }
+            if (saveButton) {
+                saveButton.disabled = true;
+                saveButton.textContent = "Status Finalizado";
+                saveButton.style.backgroundColor = "#6c757d";
+                saveButton.style.cursor = "not-allowed";
+            }
+            if (cancelButton) {
+                cancelButton.disabled = true;
+                cancelButton.textContent = "Já Cancelado/Concluído";
+                cancelButton.style.backgroundColor = "#6c757d";
+                cancelButton.style.cursor = "not-allowed";
+            }
+            // Também oculta/desabilita a seção de adicionar serviço
+            if (addServiceSection) {
+                 // addServiceSection.style.display = 'none'; // Ou mudar opacidade para indicar desabilitado
+            }
+        }
+
+        function toggleNovoServicoFields() {
+            var servicoExistenteId = document.getElementById('servicoExistenteId').value;
+            var novoServicoSection = document.getElementById('novoServicoSection');
+            var novoServicoNomeInput = document.getElementById('novoServicoNome');
+            var novoServicoPrecoInput = document.getElementById('novoServicoPreco');
+
+            if (servicoExistenteId) {
+                novoServicoSection.style.opacity = "0.5";
+                novoServicoNomeInput.disabled = true;
+                novoServicoPrecoInput.disabled = true;
+                novoServicoNomeInput.value = '';
+                novoServicoPrecoInput.value = '';
+                novoServicoNomeInput.removeAttribute('required');
+                novoServicoPrecoInput.removeAttribute('required');
+            } else {
+                novoServicoSection.style.opacity = "1";
+                novoServicoNomeInput.disabled = false;
+                novoServicoPrecoInput.disabled = false;
+                // Você pode adicionar required aqui se quiser que um novo serviço exija esses campos
+                // novoServicoNomeInput.setAttribute('required', '');
+                // novoServicoPrecoInput.setAttribute('required', '');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', toggleNovoServicoFields);
+        /*]]>*/
+    </script>
+</body>
+</html>

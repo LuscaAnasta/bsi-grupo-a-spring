@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buenos Autos - Início</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column; /* Organiza os itens em coluna */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column; /* Botões um abaixo do outro */
+            gap: 15px; /* Espaçamento entre os botões */
+            margin-top: 20px;
+        }
+
+        .button-group a {
+            display: inline-block; /* Permite padding e margem */
+            background-color: #007bff;
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            text-decoration: none; /* Remove sublinhado do link */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .button-group a:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
+        }
+
+        /* Estilo para um botão secundário (opcional) */
+        .button-group a.secondary {
+            background-color: #6c757d; /* Cinza */
+        }
+
+        .button-group a.secondary:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo à Buenos Autos!</h1>
+        <p>Por favor, escolha uma opção para continuar:</p>
+
+        <div class="button-group">
+            <a th:href="@{/login}">Entrar no Sistema (Login)</a>
+            <a th:href="@{/solicitacoes/nova}" class="secondary">Fazer Nova Solicitação</a>
+            <a th:href="@{/protocolos/consultar}" class="secondary">Consultar Protocolo</a>
+        </div>
+    </div>
+</body>
+</html>

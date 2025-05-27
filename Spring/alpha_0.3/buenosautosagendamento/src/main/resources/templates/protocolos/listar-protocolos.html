@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Protocolos - Buenos Autos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1100px; /* Mais largo para mais colunas */
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .back-link {
+            display: block;
+            text-align: left;
+            margin-bottom: 20px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #555;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .service-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .service-list li {
+            margin-bottom: 5px;
+        }
+        .actions {
+            white-space: nowrap;
+        }
+        .actions a {
+            background-color: #17a2b8; /* Azul claro */
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        .actions a:hover {
+            background-color: #138496;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciar Protocolos</h1>
+
+        <a th:href="@{/dashboard}" class="back-link">Voltar ao Dashboard</a>
+
+        <div th:if="${#lists.isEmpty(protocolos)}" class="no-data">
+            <p>Nenhum protocolo encontrado.</p>
+        </div>
+        <table th:unless="${#lists.isEmpty(protocolos)}">
+            <thead>
+                <tr>
+                    <th>Número Protocolo</th>
+                    <th>Status</th>
+                    <th>Cliente</th>
+                    <th>Veículo</th>
+                    <th>Data Agendada</th>
+                    <th>Serviços</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="protocolo : ${protocolos}">
+                    <td th:text="${protocolo.numeroProtocolo}"></td>
+                    <td th:text="${protocolo.statusProtocolo.name().replace('_', ' ')}"></td> 
+                    <td>
+                        <span th:text="${protocolo.solicitacao.nome}"></span><br> <small th:text="${protocolo.solicitacao.cpf}"></small> 
+                    </td>
+                    <td>
+                        <span th:text="${protocolo.solicitacao.marca + ' ' + protocolo.solicitacao.modelo}"></span><br> <small th:text="${protocolo.solicitacao.ano}"></small> 
+                    </td>
+                    <td th:text="${#temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy')}"></td>
+                    <td>
+                        <ul class="service-list">
+                            <li th:each="item : ${protocolo.servicosProtocolo}">
+                                <span th:text="${item.servicoLocal.nome}"></span>
+                                <span th:if="${item.observacoes}"> (<span th:text="${item.observacoes}"></span>)</span>
+                            </li>
+                        </ul>
+                    </td>
+                    <td class="actions">
+                        <a th:href="@{/protocolos/detalhes/{id}(id=${protocolo.id})}">Detalhar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

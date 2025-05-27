@@ -1,4 +1,4 @@
-package com.buenosautos.buenosautosagendamento.solicitacao.model;
+package com.buenosautos.buenosautosagendamento.modelos;
 
 import java.math.BigDecimal;
 
@@ -6,37 +6,29 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.MappedSuperclass;
 
-@Entity
-public class Servico {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public abstract class ServicoModelo {
 
     private String codigo;
     private String nome;
-    private BigDecimal preco; 
+    private BigDecimal preco;
+
 
     // Construtor vazio (obrigatório para JPA)
-    public Servico() {
+    public ServicoModelo() {
     }
 
     // Construtor com argumentos
-    public Servico(String codigo, String nome, BigDecimal preco) {
+    public ServicoModelo(String codigo, String nome, BigDecimal preco) {
         this.codigo = codigo;
         this.nome = nome;
         this.preco = preco;
     }
 
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getCodigo() {
         return codigo;

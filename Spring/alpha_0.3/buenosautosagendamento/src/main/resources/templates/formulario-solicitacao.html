@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Solicitação de Agendamento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="datetime-local"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .success-message {
+            color: #28a745;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .service-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .service-table th, .service-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .service-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nova Solicitação de Agendamento</h1>
+
+        <p th:if="${mensagemErro}" class="error-message" th:text="${mensagemErro}"></p>
+        <p th:if="${mensagemSucesso}" class="success-message" th:text="${mensagemSucesso}"></p>
+
+        <form action="#" th:action="@{/solicitacoes/nova}" th:object="${solicitacaoForm}" method="post">
+            <h2 class="section-title">Dados do Cliente</h2>
+            <div class="form-group">
+                <label for="clienteNome">Nome Completo:</label>
+                <input type="text" id="clienteNome" th:field="*{clienteNome}" required>
+                <p th:if="${#fields.hasErrors('clienteNome')}" th:errors="*{clienteNome}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="clienteCpf">CPF:</label>
+                <input type="text" id="clienteCpf" th:field="*{clienteCpf}" pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}" placeholder="Ex: 123.456.789-00" required>
+                <p th:if="${#fields.hasErrors('clienteCpf')}" th:errors="*{clienteCpf}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="clienteEmail">Email:</label>
+                <input type="email" id="clienteEmail" th:field="*{clienteEmail}" required>
+                <p th:if="${#fields.hasErrors('clienteEmail')}" th:errors="*{clienteEmail}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="clienteTelefone">Telefone:</label>
+                <input type="tel" id="clienteTelefone" th:field="*{clienteTelefone}" pattern="\(\d{2}\)\s?\d{4,5}-?\d{4}" placeholder="Ex: (XX) 9XXXX-XXXX" required>
+                <p th:if="${#fields.hasErrors('clienteTelefone')}" th:errors="*{clienteTelefone}" class="error-message"></p>
+            </div>
+
+            <h2 class="section-title">Dados do Veículo</h2>
+            <div class="form-group">
+                <label for="veiculoMarca">Marca:</label>
+                <input type="text" id="veiculoMarca" th:field="*{veiculoMarca}" required>
+                <p th:if="${#fields.hasErrors('veiculoMarca')}" th:errors="*{veiculoMarca}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="veiculoModelo">Modelo:</label>
+                <input type="text" id="veiculoModelo" th:field="*{veiculoModelo}" required>
+                <p th:if="${#fields.hasErrors('veiculoModelo')}" th:errors="*{veiculoModelo}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="veiculoAno">Ano:</label>
+                <input type="text" id="veiculoAno" th:field="*{veiculoAno}" pattern="\d{4}" placeholder="Ex: 2023" required>
+                <p th:if="${#fields.hasErrors('veiculoAno')}" th:errors="*{veiculoAno}" class="error-message"></p>
+            </div>
+            <div class="form-group">
+                <label for="veiculoPlaca">Placa:</label>
+                <input type="text" id="veiculoPlaca" th:field="*{veiculoPlaca}" required>
+                <p th:if="${#fields.hasErrors('veiculoPlaca')}" th:errors="*{veiculoPlaca}" class="error-message"></p>
+            </div>
+
+            <h2 class="section-title">Serviços Desejados</h2>
+            <div class="form-group">
+                <p>Selecione um ou mais serviços:</p>
+                
+                <p th:if="${erroServicos}" class="error-message" th:text="${erroServicos}"></p>
+                <p th:if="${#fields.hasErrors('servicoIds')}" th:errors="*{servicoIds}" class="error-message"></p>
+
+                <table class="service-table" th:if="${not #lists.isEmpty(servicosDisponiveis)}">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Nome do Serviço</th>
+                            <th>Código</th>
+                            <th>Preço</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="servico : ${servicosDisponiveis}">
+                            <td style="text-align: center;">
+                                <input type="checkbox" th:field="*{servicoIds}" th:value="${servico.id}">
+                            </td>
+                            <td th:text="${servico.nome}"></td>
+                            <td th:text="${servico.codigo}"></td>
+                            <td th:text="'R$ ' + ${#numbers.formatDecimal(servico.preco, 1, 2)}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p th:if="${#lists.isEmpty(servicosDisponiveis) and not erroServicos}">Nenhum serviço disponível.</p>
+            </div>
+
+            <h2 class="section-title">Informações do Agendamento</h2>
+            <div class="form-group">
+                <label for="dataAgendada">Data e Hora do Agendamento:</label>
+                <input type="datetime-local" id="dataAgendada" th:field="*{dataAgendada}" required>
+                <p th:if="${#fields.hasErrors('dataAgendada')}" th:errors="*{dataAgendada}" class="error-message"></p>
+            </div>
+
+            <button type="submit">Enviar Solicitação</button>
+        </form>
+    </div>
+</body>
+</html>
