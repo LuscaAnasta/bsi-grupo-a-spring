@@ -1,5 +1,6 @@
 package com.buenosautos.buenosautosagendamento.protocolo.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList; // Importe para inicializar a lista
@@ -28,7 +29,6 @@ public class Protocolo {
     @OneToOne
     private SolicitacaoLocal solicitacao;
 
-    // AQUI A MUDANÇA: Agora é uma lista de ProtocoloServicoItem
     @OneToMany(mappedBy = "protocolo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProtocoloServicoItem> servicosProtocolo;
 
@@ -46,7 +46,8 @@ public class Protocolo {
         CONFIRMADO,
         EM_EXECUCAO,
         AGUARDANDO_PECAS,
-        CONCLUIDO,
+        CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE,
+        CONCLUIDO_FINALIZADO,
         CANCELADO,
         NAO_COMPARECEU
     }
@@ -101,8 +102,8 @@ public class Protocolo {
     }
     
     // Método auxiliar para adicionar um serviço com observação
-    public void adicionarServico(ServicoLocal servico, String observacoes) {
-        ProtocoloServicoItem item = new ProtocoloServicoItem(this, servico, observacoes);
+    public void adicionarServico(Long idOriginalServico, String codigoServico, String nomeServico, BigDecimal precoServico, String observacoes) {
+        ProtocoloServicoItem item = new ProtocoloServicoItem(this, idOriginalServico, codigoServico, nomeServico, precoServico, observacoes);
         this.servicosProtocolo.add(item);
     }
 

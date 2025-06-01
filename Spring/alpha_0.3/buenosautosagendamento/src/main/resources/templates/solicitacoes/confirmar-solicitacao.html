@@ -81,7 +81,7 @@
                 <input type="hidden" th:field="*{horarioAgendado}" />
                 
                 <div th:each="servicoId : ${solicitacaoConfirmacao.servicoIds}">
-                    <input type="hidden" th:name="*{servicoIds}" th:value="${servicoId}" />
+                      <input type="hidden" name="servicoIds" th:value="${servicoId}" />
                 </div>
 
                 <button type="submit" class="confirm-button">Confirmar e Enviar Solicitação</button>

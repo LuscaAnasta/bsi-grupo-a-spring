@@ -124,7 +124,7 @@
                     <td>
                         <ul class="service-list">
                             <li th:each="item : ${protocolo.servicosProtocolo}">
-                                <span th:text="${item.servicoLocal.nome}"></span>
+                                <span th:text="${item.nomeServico}"></span>
                                 <span th:if="${item.observacoes}"> (<span th:text="${item.observacoes}"></span>)</span>
                             </li>
                         </ul>

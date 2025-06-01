@@ -1,8 +1,11 @@
 package com.buenosautos.buenosautosagendamento.protocolo.service;
 
+import com.buenosautos.buenosautosagendamento.notificacao.service.NotificacaoService; 
+
 import java.util.List;
 import java.util.Optional;
 import java.math.BigDecimal;
+import java.util.stream.Collectors; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo;
-import com.buenosautos.buenosautosagendamento.protocolo.model.ProtocoloServicoItem; // Importe esta classe
+import com.buenosautos.buenosautosagendamento.protocolo.model.ProtocoloServicoItem;
 import com.buenosautos.buenosautosagendamento.protocolo.model.ServicoLocal;
 import com.buenosautos.buenosautosagendamento.protocolo.model.SolicitacaoLocal;
 import com.buenosautos.buenosautosagendamento.protocolo.repository.ProtocoloRepository;
@@ -23,8 +26,8 @@ import com.buenosautos.buenosautosagendamento.servico.service.ServicoService;
 
 @Service
 public class ProtocoloService {
-	
-	@Autowired
+    
+    @Autowired
     private ProtocoloRepository protocoloRepository;
 
     @Autowired
@@ -33,12 +36,17 @@ public class ProtocoloService {
     @Autowired
     @Qualifier("protocoloServicoLocalRepository")
     private ServicoLocalRepository servicoLocalRepository;
-    
+
     @Autowired
     private ServicoService servicoPrincipalService;
 
+    @Autowired 
+    private NotificacaoService notificacaoService;
+
+
     @Transactional
     public Protocolo processarSolicitacaoEventAndCreateProtocolo(SolicitacaoLocal solicitacaoLocal, List<Long> servicoIdsParaProtocolo) {
+        // ... (código existente deste método) ...
         SolicitacaoLocal solicitacaoLocalSalva = solicitacaoLocalRepository.save(solicitacaoLocal);
         System.out.println("SolicitacaoLocal salva/atualizada no Protocolo: " + solicitacaoLocalSalva.getId());
 
@@ -58,9 +66,16 @@ public class ProtocoloService {
         }
         
         if (servicoIdsParaProtocolo != null && !servicoIdsParaProtocolo.isEmpty()) {
-            List<ServicoLocal> servicosEncontrados = servicoLocalRepository.findAllById(servicoIdsParaProtocolo);
-            for (ServicoLocal servico : servicosEncontrados) {
-                novoProtocolo.adicionarServico(servico, "Serviço incluído automaticamente da solicitação.");
+            List<ServicoLocal> servicosIniciaisDaSolicitacao = servicoLocalRepository.findAllById(servicoIdsParaProtocolo);
+
+            for (ServicoLocal servicoLocal : servicosIniciaisDaSolicitacao) {
+                novoProtocolo.adicionarServico(
+                    servicoLocal.getId(),
+                    servicoLocal.getCodigo(),
+                    servicoLocal.getNome(),
+                    servicoLocal.getPreco(),
+                    "Serviço incluído automaticamente da solicitação."
+                );
             }
         }
 
@@ -72,7 +87,7 @@ public class ProtocoloService {
     @Transactional
     public Protocolo adicionarServicoExistenteOuNovoAoProtocolo(
         Long protocoloId,
-        Long servicoExistentePrincipalId,
+        Long servicoExistentePrincipalId, 
         String novoServicoNome,
         BigDecimal novoServicoPreco,
         String observacoesServico
@@ -80,15 +95,19 @@ public class ProtocoloService {
         Protocolo protocolo = protocoloRepository.findById(protocoloId)
             .orElseThrow(() -> new RuntimeException("Protocolo não encontrado para adicionar serviço."));
 
-        ServicoLocal servicoLocalParaAdicionar;
+        Long idServicoSnapshot = null;
+        String codigoServicoSnapshot = null;
+        String nomeServicoSnapshot = null;
+        BigDecimal precoServicoSnapshot = null;
 
         if (servicoExistentePrincipalId != null) {
-            servicoLocalParaAdicionar = servicoLocalRepository.findById(servicoExistentePrincipalId)
-                .orElseThrow(() -> new RuntimeException("Serviço existente com ID " + servicoExistentePrincipalId + " não encontrado na cópia local."));
+            Servico servicoPrincipal = servicoPrincipalService.buscarServicoPorId(servicoExistentePrincipalId)
+                .orElseThrow(() -> new RuntimeException("Serviço existente com ID " + servicoExistentePrincipalId + " não encontrado no módulo principal."));
             
-            if (servicoLocalParaAdicionar.getStatus() == ServicoLocal.Status.DESATIVADO) {
-                throw new IllegalArgumentException("Não é possível adicionar um serviço desativado ao protocolo.");
-            }
+            idServicoSnapshot = servicoPrincipal.getId();
+            codigoServicoSnapshot = servicoPrincipal.getCodigo();
+            nomeServicoSnapshot = servicoPrincipal.getNome();
+            precoServicoSnapshot = servicoPrincipal.getPreco();
 
         } else if (novoServicoNome != null && !novoServicoNome.trim().isEmpty() && novoServicoPreco != null) {
             String codigoDinamico = "DYN-" + System.nanoTime(); 
@@ -96,17 +115,78 @@ public class ProtocoloService {
             
             Servico servicoSalvoPrincipal = servicoPrincipalService.criarServico(novoServicoNoModuloPrincipal);
 
-            servicoLocalParaAdicionar = servicoLocalRepository.findById(servicoSalvoPrincipal.getId())
-                .orElseThrow(() -> new RuntimeException("Erro interno: Cópia local do serviço dinâmico não encontrada após criação."));
+            idServicoSnapshot = servicoSalvoPrincipal.getId();
+            codigoServicoSnapshot = servicoSalvoPrincipal.getCodigo();
+            nomeServicoSnapshot = servicoSalvoPrincipal.getNome();
+            precoServicoSnapshot = servicoSalvoPrincipal.getPreco();
         } else {
             throw new IllegalArgumentException("Para adicionar um serviço, selecione um serviço existente ou forneça nome e preço para um novo.");
         }
 
-        protocolo.adicionarServico(servicoLocalParaAdicionar, observacoesServico);
+        protocolo.adicionarServico(idServicoSnapshot, codigoServicoSnapshot, nomeServicoSnapshot, precoServicoSnapshot, observacoesServico);
 
         return protocoloRepository.save(protocolo);
     }
+
+
+    @Transactional
+    public Protocolo concluirProtocolo(Long id, Protocolo.Status statusConclusao) {
+        if (statusConclusao != Protocolo.Status.CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE &&
+            statusConclusao != Protocolo.Status.CONCLUIDO_FINALIZADO) {
+            throw new IllegalArgumentException("O status de conclusão deve ser CONCLUIDO_AGUARDANDO_RETIRADA_CLIENTE ou CONCLUIDO_FINALIZADO.");
+        }
+
+        Protocolo protocoloExistente = protocoloRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Protocolo não encontrado para conclusão!"));
+        
+        if (protocoloExistente.getStatusProtocolo() == Protocolo.Status.CANCELADO) {
+            throw new IllegalArgumentException("Protocolo cancelado não pode ser concluído.");
+        }
+
+        protocoloExistente.setStatusProtocolo(statusConclusao);
+        Protocolo protocoloAtualizado = protocoloRepository.save(protocoloExistente);
+
+        if (statusConclusao == Protocolo.Status.CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE) {
+            String toEmail = protocoloAtualizado.getSolicitacao().getEmail();
+            String clientName = protocoloAtualizado.getSolicitacao().getNome();
+            String vehicleDetails = String.format("%s %s (%s) - Placa: %s",
+                                                protocoloAtualizado.getSolicitacao().getMarca(),
+                                                protocoloAtualizado.getSolicitacao().getModelo(),
+                                                protocoloAtualizado.getSolicitacao().getAno(),
+                                                protocoloAtualizado.getSolicitacao().getPlaca());
+            String serviceDetails = protocoloAtualizado.getServicosProtocolo().stream()
+                                                    .map(item -> item.getNomeServico())
+                                                    .collect(Collectors.joining(", "));
+            String protocolNumber = protocoloAtualizado.getNumeroProtocolo();
+
+            notificacaoService.sendServiceConcludedWaitingPickupEmail(
+                toEmail,
+                clientName,
+                vehicleDetails,
+                serviceDetails,
+                protocolNumber
+            );
+            System.out.println("E-mail de 'Aguardando Retirada' disparado para o protocolo: " + protocolNumber);
+        }
+
+        return protocoloAtualizado;
+    }
+
+    @Transactional
+    public Protocolo cancelarProtocolo(Long id) {
+        Protocolo protocoloExistente = protocoloRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Protocolo não encontrado para cancelamento!"));
+             
+        if (protocoloExistente.getStatusProtocolo() == Protocolo.Status.CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE ||
+            protocoloExistente.getStatusProtocolo() == Protocolo.Status.CONCLUIDO_FINALIZADO) {
+            throw new IllegalArgumentException("Protocolo já concluído não pode ser cancelado.");
+        }
+
+        protocoloExistente.setStatusProtocolo(Protocolo.Status.CANCELADO);
+        return protocoloRepository.save(protocoloExistente);
+    }
     
+    @Transactional
     public List<Protocolo> listarTodosProtocolos() {
         return protocoloRepository.findAllByOrderByDataProtocoloDesc();
     }
@@ -118,56 +198,57 @@ public class ProtocoloService {
     @Transactional
     public Protocolo atualizarStatusProtocolo(Long id, Protocolo.Status novoStatus) {
         Protocolo protocoloExistente = protocoloRepository.findById(id)
-                                        .orElseThrow(() -> new RuntimeException("Protocolo não encontrado para atualização!"));
-        
-        if (novoStatus == Protocolo.Status.CANCELADO) {
-            throw new IllegalArgumentException("Status 'CANCELADO' deve ser usado apenas através da função de cancelamento específica.");
+            .orElseThrow(() -> new RuntimeException("Protocolo não encontrado para atualização!"));
+             
+        if (novoStatus == Protocolo.Status.CANCELADO || novoStatus.name().startsWith("CONCLUIDO_")) {
+            throw new IllegalArgumentException("Status 'CANCELADO' ou 'CONCLUIDO' devem ser usados através de funções específicas.");
         }
+
+        // --- LÓGICA NOVO: Envio de e-mail ao CONFIRMAR o agendamento ---
+        if (novoStatus == Protocolo.Status.CONFIRMADO && protocoloExistente.getStatusProtocolo() != Protocolo.Status.CONFIRMADO) {
+            // Garante que o e-mail só seja enviado na primeira vez que for CONFIRMADO
+            String toEmail = protocoloExistente.getSolicitacao().getEmail();
+            String clientName = protocoloExistente.getSolicitacao().getNome();
+            String serviceDetails = protocoloExistente.getServicosProtocolo().stream()
+                                                    .map(item -> item.getNomeServico())
+                                                    .collect(Collectors.joining(", "));
+            String appointmentDate = protocoloExistente.getDataAgendadaProtocolo() != null ? 
+                                     protocoloExistente.getDataAgendadaProtocolo().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A";
+            String appointmentTime = protocoloExistente.getSolicitacao().getDataAgendada() != null ? 
+                                     protocoloExistente.getSolicitacao().getDataAgendada().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm")) : "N/A";
+            String protocolNumber = protocoloExistente.getNumeroProtocolo();
+
+            notificacaoService.sendAppointmentConfirmedByMechanicEmail(
+                toEmail,
+                clientName,
+                serviceDetails,
+                appointmentDate,
+                appointmentTime,
+                protocolNumber
+            );
+            System.out.println("E-mail de 'Agendamento Confirmado' disparado para o protocolo: " + protocolNumber);
+        }
+        // ---------------------------------------------------------------
 
         protocoloExistente.setStatusProtocolo(novoStatus);
         return protocoloRepository.save(protocoloExistente);
     }
 
-    @Transactional
-    public Protocolo cancelarProtocolo(Long id) {
-        Protocolo protocoloExistente = protocoloRepository.findById(id)
-                                        .orElseThrow(() -> new RuntimeException("Protocolo não encontrado para cancelamento!"));
-        
-        if (protocoloExistente.getStatusProtocolo() == Protocolo.Status.CONCLUIDO) {
-            throw new IllegalArgumentException("Protocolo já concluído não pode ser cancelado.");
-        }
-
-        protocoloExistente.setStatusProtocolo(Protocolo.Status.CANCELADO);
-        return protocoloRepository.save(protocoloExistente);
-    }
-    
     public Optional<Protocolo> buscarProtocoloPorNumero(String numeroProtocolo) {
         return protocoloRepository.findByNumeroProtocolo(numeroProtocolo);
     }
 
-    // NOVO: Método para remover um ProtocoloServicoItem
     @Transactional
     public void removerServicoItem(Long protocoloId, Long itemId) {
         Protocolo protocolo = protocoloRepository.findById(protocoloId)
             .orElseThrow(() -> new IllegalArgumentException("Protocolo não encontrado."));
 
-        // Encontra o item de serviço na lista do protocolo
         Optional<ProtocoloServicoItem> itemParaRemover = protocolo.getServicosProtocolo().stream()
             .filter(item -> item.getId().equals(itemId))
             .findFirst();
 
         if (itemParaRemover.isPresent()) {
-            // Remove o item da coleção. Graças a orphanRemoval=true no @OneToMany,
-            // o JPA irá deletar este item do banco de dados quando o protocolo for salvo.
             protocolo.getServicosProtocolo().remove(itemParaRemover.get());
-            // Não precisa chamar save() explicitamente no protocoloRepository aqui,
-            // pois a operação é transacional e a mudança na coleção gerenciada será sincronizada.
-            // No entanto, para garantir que o flush ocorra e o item seja deletado na transação,
-            // você pode chamar protocoloRepository.save(protocolo); se quiser forçar o flush,
-            // mas o @Transactional já cuida da sincronização.
-            // Para maior clareza e forçar a operação, pode-se salvar.
-            // protocoloRepository.save(protocolo); // Opcional, dependendo do contexto.
-            System.out.println("Serviço item ID " + itemId + " removido do protocolo " + protocoloId);
         } else {
             throw new IllegalArgumentException("Serviço item com ID " + itemId + " não encontrado no protocolo " + protocoloId + ".");
         }

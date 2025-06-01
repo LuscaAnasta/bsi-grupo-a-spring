@@ -32,13 +32,33 @@
             margin-bottom: 25px;
         }
 
-        .back-link {
-            display: block;
-            text-align: left;
+        .action-buttons { /* Novo estilo para agrupar botões */
+            display: flex;
+            justify-content: space-between; /* Espaça os itens */
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        .back-link {
             color: #007bff;
             text-decoration: none;
             font-weight: bold;
+        }
+        
+        .add-button { /* Estilo para o novo botão */
+            background-color: #28a745; /* Cor verde para adicionar */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none; /* Remover sublinhado do link */
+            display: inline-block; /* Permitir padding e margem */
+        }
+
+        .add-button:hover {
+            background-color: #218838;
         }
 
         table {
@@ -78,7 +98,10 @@
     <div class="container">
         <h1>Últimas Solicitações</h1>
 
-        <a th:href="@{/dashboard}" class="back-link">Voltar ao Dashboard</a>
+        <div class="action-buttons">
+            <a th:href="@{/dashboard}" class="back-link">Voltar ao Dashboard</a>
+            <a th:href="@{/solicitacoes/nova-mecanico}" class="add-button">Adicionar Solicitação</a>
+        </div>
 
         <div th:if="${#lists.isEmpty(solicitacoes)}" class="no-data">
             <p>Nenhuma solicitação encontrada.</p>

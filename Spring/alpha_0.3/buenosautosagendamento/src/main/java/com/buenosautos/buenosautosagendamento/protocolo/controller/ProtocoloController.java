@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.Arrays; // Necessário para usar Arrays.stream
 
 @Controller
 @RequestMapping("/protocolos")
@@ -43,12 +43,15 @@ public class ProtocoloController {
     @GetMapping("/detalhes/{id}")
     public String exibirDetalhesProtocolo(@PathVariable Long id, Model model) {
         Protocolo protocolo = protocoloService.buscarProtocoloPorId(id)
-                                          .orElseThrow(() -> new RuntimeException("Protocolo não encontrado!"));
+                                             .orElseThrow(() -> new RuntimeException("Protocolo não encontrado!"));
         model.addAttribute("protocolo", protocolo);
 
+        // Opções de status para o dropdown de "Alterar Status"
+        // Filtra CANCELADO e os status de CONCLUSAO_* porque eles terão botões/ações específicas
         List<Protocolo.Status> statusOptions = Arrays.stream(Protocolo.Status.values())
-                                                   .filter(s -> s != Protocolo.Status.CANCELADO)
-                                                   .collect(Collectors.toList());
+                                                     .filter(s -> s != Protocolo.Status.CANCELADO)
+                                                     .filter(s -> !s.name().startsWith("CONCLUIDO_")) // Filtra todos os CONCLUIDO_
+                                                     .collect(Collectors.toList());
         model.addAttribute("statusOptions", statusOptions);
 
         // Adiciona a lista de serviços locais ativos para o dropdown de "adicionar serviço existente"
@@ -57,16 +60,20 @@ public class ProtocoloController {
             .collect(Collectors.toList());
         model.addAttribute("servicosDisponiveis", servicosDisponiveis);
 
-
         return "protocolos/detalhes-protocolo";
     }
 
-    // Endpoint para salvar alterações de status
+    // Endpoint para salvar alterações de status (exclui CANCELAR e CONCLUIR)
     @PostMapping("/salvar-status/{id}")
     public String salvarStatusProtocolo(@PathVariable Long id, 
                                         @RequestParam Protocolo.Status novoStatus, 
                                         RedirectAttributes redirectAttributes) {
         try {
+            // Este endpoint não deve ser usado para Cancelar ou Concluir.
+            // O serviço já tem validação, mas podemos ser explícitos aqui também.
+            if (novoStatus == Protocolo.Status.CANCELADO || novoStatus.name().startsWith("CONCLUIDO_")) {
+                throw new IllegalArgumentException("Status 'CANCELADO' ou 'CONCLUIDO' devem ser usados através de funções específicas.");
+            }
             protocoloService.atualizarStatusProtocolo(id, novoStatus);
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Status do protocolo atualizado com sucesso!");
         } catch (IllegalArgumentException e) {
@@ -79,7 +86,7 @@ public class ProtocoloController {
         return "redirect:/protocolos/detalhes/{id}";
     }
 
-    // Endpoint para cancelar protocolo
+    // Endpoint para cancelar protocolo (método já existente)
     @PostMapping("/cancelar/{id}")
     public String cancelarProtocolo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
@@ -95,6 +102,24 @@ public class ProtocoloController {
         return "redirect:/protocolos/detalhes/{id}";
     }
     
+    // NOVO MÉTODO: Endpoint para concluir protocolo (chamará o ProtocoloService.concluirProtocolo)
+    @PostMapping("/concluir/{id}")
+    public String concluirProtocolo(@PathVariable Long id, 
+                                    @RequestParam Protocolo.Status statusConclusao, // Será CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE ou CONCLUIDO_FINALIZADO
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            protocoloService.concluirProtocolo(id, statusConclusao); // Chama o novo método do serviço
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Protocolo concluído com sucesso!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro de validação: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("Erro ao concluir protocolo: " + e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("mensagemErro", "Ocorreu um erro inesperado ao concluir protocolo: " + e.getMessage());
+        }
+        return "redirect:/protocolos/detalhes/{id}";
+    }
+    
     // NOVO: Endpoint para adicionar serviço diretamente na página de detalhes
     @PostMapping("/adicionar-servico-direto/{protocoloId}")
     public String adicionarServicoDiretoAoProtocolo(
@@ -102,7 +127,7 @@ public class ProtocoloController {
         @RequestParam(value = "servicoExistenteId", required = false) Long servicoExistenteId,
         @RequestParam(value = "novoServicoNome", required = false) String novoServicoNome,
         @RequestParam(value = "novoServicoPreco", required = false) BigDecimal novoServicoPreco,
-        @RequestParam(value = "observacoesNovoServico", required = false) String observacoes, // Nome do campo no HTML
+        @RequestParam(value = "observacoesNovoServico", required = false) String observacoes,
         RedirectAttributes redirectAttributes
     ) {
         try {

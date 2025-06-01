@@ -74,32 +74,31 @@
         .service-list li {
             margin-bottom: 5px;
             color: #333;
-            display: flex; /* Para alinhar o texto e o botão 'x' */
+            display: flex;
             align-items: center;
-            justify-content: space-between; /* Para empurrar o 'x' para a direita */
+            justify-content: space-between;
         }
         .service-list li small {
             color: #777;
         }
         .remove-service-btn {
-            background-color: #dc3545; /* Vermelho */
+            background-color: #dc3545;
             color: white;
             border: none;
-            border-radius: 50%; /* Faz um círculo */
+            border-radius: 50%;
             width: 25px;
             height: 25px;
-            line-height: 25px; /* Centraliza o 'x' verticalmente */
+            line-height: 25px;
             text-align: center;
             font-weight: bold;
             cursor: pointer;
             font-size: 0.8em;
             margin-left: 10px;
-            flex-shrink: 0; /* Não deixa o botão encolher */
+            flex-shrink: 0;
         }
         .remove-service-btn:hover {
             background-color: #c82333;
         }
-
 
         .form-group {
             margin-bottom: 15px;
@@ -136,15 +135,15 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
-            text-decoration: none; /* Para links */
+            text-decoration: none;
             transition: background-color 0.3s ease;
-            display: inline-flex; /* Para botões e links no mesmo grupo */
+            display: inline-flex;
             align-items: center;
             justify-content: center;
         }
 
         .button-group .save-button, .button-group .submit-button {
-            background-color: #28a745; /* Verde */
+            background-color: #28a745;
             color: white;
         }
 
@@ -153,12 +152,21 @@
         }
 
         .button-group .cancel-button {
-            background-color: #dc3545; /* Vermelho */
+            background-color: #dc3545;
             color: white;
         }
 
         .button-group .cancel-button:hover {
             background-color: #c82333;
+        }
+
+        .button-group .complete-button { /* Novo estilo para botões de conclusão */
+            background-color: #007bff;
+            color: white;
+        }
+
+        .button-group .complete-button:hover {
+            background-color: #0056b3;
         }
 
         .alert-message {
@@ -208,6 +216,7 @@
             <div class="detail-item"><strong>Número do Protocolo:</strong> <span th:text="${protocolo.numeroProtocolo}"></span></div>
             <div class="detail-item"><strong>Data do Protocolo:</strong> <span th:text="${#temporals.format(protocolo.dataProtocolo, 'dd/MM/yyyy')}"></span></div>
             <div class="detail-item"><strong>Data Agendada:</strong> <span th:text="${#temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy')}"></span></div>
+            <div class="detail-item"><strong>Status Atual:</strong> <span th:text="${protocolo.statusProtocolo.name().replace('_', ' ')}"></span></div>
         </div>
 
         <div class="detail-section">
@@ -229,20 +238,20 @@
             <ol class="service-list" th:unless="${#lists.isEmpty(protocolo.servicosProtocolo)}">
                 <li th:each="item : ${protocolo.servicosProtocolo}">
                     <div>
-                        <strong><span th:text="${item.servicoLocal.nome}"></span></strong> 
-                        (Código: <span th:text="${item.servicoLocal.codigo}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.servicoLocal.preco, 1, 2)}"></span>)<br>
+                        <strong><span th:text="${item.nomeServico}"></span></strong>
+                        (Código: <span th:text="${item.codigoServico}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.precoServico, 1, 2)}"></span>)<br>
                         <small th:if="${item.observacoes}">Observações: <span th:text="${item.observacoes}"></span></small>
                     </div>
                     <form th:action="@{/protocolos/remover-servico-item/{protocoloId}/{itemId}(protocoloId=${protocolo.id}, itemId=${item.id})}" method="post"
                           onsubmit="return confirm('Tem certeza que deseja remover este serviço do protocolo?');"
-                          th:if="${protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO && protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                          th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
                         <button type="submit" class="remove-service-btn">X</button>
                     </form>
                 </li>
             </ol>
         </div>
 
-        <div class="detail-section" th:if="${protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO && protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+        <div class="detail-section" th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
             <h3>Adicionar Serviço ao Protocolo</h3>
             <form th:action="@{/protocolos/adicionar-servico-direto/{protocoloId}(protocoloId=${protocolo.id})}" method="post">
                 <fieldset>
@@ -251,8 +260,8 @@
                         <label for="servicoExistenteId">Selecionar Serviço:</label>
                         <select id="servicoExistenteId" name="servicoExistenteId" onchange="toggleNovoServicoFields()">
                             <option value="">-- Selecione um serviço existente --</option>
-                            <option th:each="servico : ${servicosDisponiveis}" 
-                                    th:value="${servico.id}" 
+                            <option th:each="servico : ${servicosDisponiveis}"
+                                    th:value="${servico.id}"
                                     th:text="${servico.nome + ' (R$ ' + #numbers.formatDecimal(servico.preco, 1, 2) + ')'}"></option>
                         </select>
                     </div>
@@ -287,37 +296,65 @@
                 <div class="form-group">
                     <label for="statusProtocolo">Alterar Status:</label>
                     <select id="statusProtocolo" name="novoStatus">
-                        <option th:each="status : ${statusOptions}" 
-                                th:value="${status}" 
-                                th:text="${status.name().replace('_', ' ')}" 
+                        <option th:each="status : ${statusOptions}"
+                                th:value="${status}"
+                                th:text="${status.name().replace('_', ' ')}"
                                 th:selected="${status == protocolo.statusProtocolo}">Status</option>
                     </select>
                 </div>
                 <div class="button-group">
-                    <button type="submit" class="save-button">Salvar Alterações</button>
+                    <button type="submit" class="save-button"
+                            th:disabled="${protocolo.statusProtocolo.name().startsWith('CONCLUIDO') or protocolo.statusProtocolo == T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                        Salvar Alterações
+                    </button>
                 </div>
             </form>
 
-            <form th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
-                  onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja CANCELAR este protocolo? Essa ação é irreversível.');"
-                  th:if="${protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO && protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO}">
-                <div class="button-group">
+            <div class="button-group" style="margin-top: 15px;">
+                <form th:action="@{/protocolos/concluir/{id}(id=${protocolo.id})}" method="post"
+                      onsubmit="return confirm('Confirmar conclusão do serviço? Status: AGUARDANDO RETIRADA DO CLIENTE.');"
+                      th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                    <input type="hidden" name="statusConclusao" th:value="${T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE}" />
+                    <button type="submit" class="complete-button">Concluir (Aguardando Retirada)</button>
+                </form>
+
+                <form th:action="@{/protocolos/concluir/{id}(id=${protocolo.id})}" method="post"
+                      onsubmit="return confirm('Confirmar conclusão FINALIZADA do serviço?');"
+                      th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO_FINALIZADO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                    <input type="hidden" name="statusConclusao" th:value="${T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO_FINALIZADO}" />
+                    <button type="submit" class="complete-button">Concluir (Finalizado)</button>
+                </form>
+
+                <form th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
+                      onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja CANCELAR este protocolo? Essa ação é irreversível.');"
+                      th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
                     <button type="submit" class="cancel-button">Cancelar Protocolo</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        var currentStatus = [[${protocolo.statusProtocolo}]];
-        var selectElement = document.getElementById('statusProtocolo');
-        var saveButton = document.querySelector('.save-button');
-        var cancelButton = document.querySelector('.cancel-button');
-        var addServiceSection = document.querySelector('.detail-section:nth-child(4)'); // A seção de adicionar serviço
+        // Usar uma variável JS para o status atual
+        const currentStatus = [[${protocolo.statusProtocolo}]];
 
-        // Desabilita formulário de status e botão de salvar se o protocolo for CANCELADO ou CONCLUIDO
-        if (currentStatus === 'CANCELADO' || currentStatus === 'CONCLUIDO') {
+        // Mapear os status que indicam um estado "finalizado" para desabilitar edições
+        const finalStates = [
+            'CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE',
+            'CONCLUIDO_FINALIZADO',
+            'CANCELADO',
+            'NAO_COMPARECEU' // Adicione NAO_COMPARECEU como estado final se não permitir edições
+        ];
+        const isFinalState = finalStates.includes(currentStatus);
+
+        const selectElement = document.getElementById('statusProtocolo');
+        const saveButton = document.querySelector('.save-button');
+        const removeServiceBtns = document.querySelectorAll('.remove-service-btn');
+        const addServiceSection = document.querySelector('.detail-section:nth-child(4)'); // A seção de adicionar serviço
+
+        // Desabilita formulário de status e botões de ação se o protocolo estiver em um estado final
+        if (isFinalState) {
             if (selectElement) {
                 selectElement.disabled = true;
             }
@@ -327,18 +364,19 @@
                 saveButton.style.backgroundColor = "#6c757d";
                 saveButton.style.cursor = "not-allowed";
             }
-            if (cancelButton) {
-                cancelButton.disabled = true;
-                cancelButton.textContent = "Já Cancelado/Concluído";
-                cancelButton.style.backgroundColor = "#6c757d";
-                cancelButton.style.cursor = "not-allowed";
-            }
-            // Também oculta/desabilita a seção de adicionar serviço
+            // Desabilita todos os botões de remoção de serviço
+            removeServiceBtns.forEach(btn => {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+                btn.style.cursor = "not-allowed";
+            });
+            // Oculta/desabilita a seção de adicionar serviço
             if (addServiceSection) {
-                 // addServiceSection.style.display = 'none'; // Ou mudar opacidade para indicar desabilitado
+                 addServiceSection.style.display = 'none'; // Ou mudar opacidade para indicar desabilitado
             }
         }
 
+        // Lógica para alternar campos de novo serviço dinâmico
         function toggleNovoServicoFields() {
             var servicoExistenteId = document.getElementById('servicoExistenteId').value;
             var novoServicoSection = document.getElementById('novoServicoSection');

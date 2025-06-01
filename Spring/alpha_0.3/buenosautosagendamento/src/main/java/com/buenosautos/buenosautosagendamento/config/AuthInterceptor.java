@@ -18,6 +18,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         "/logout",
         "/solicitacoes/nova", // <--- Adicione a rota de solicitação aqui
         "/solicitacoes", 
+        "/solicitacoes/confirmar", 
         "/protocolos/consultar",             // Formulário de consulta
         "/protocolos/detalhes-protocolo-consulta",// Se houver uma rota base para solicitações
         "/"                   // A página inicial, se for pública
