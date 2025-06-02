@@ -1,0 +1,536 @@
+/* --- GERAL E VARIÁVEIS --- */
+:root {
+    --primary-color: #FFD700; /* Amarelo do logo como cor de destaque */
+    --dark-bg: #1a1a1a;
+    --dark-bg-secondary: #2c2c2c;
+    --light-bg: #f4f4f4;
+    --text-light: #ffffff;
+    --text-dark: #333333;
+    --text-muted: #6c757d;
+    --header-height: 80px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--light-bg);
+    color: var(--text-dark);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+/* --- HEADER / NAVBAR --- */
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
+}
+
+.navbar {
+    display: flex;
+    gap: 2rem;
+}
+
+.navbar a {
+    font-size: 1rem;
+    font-weight: 600;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.navbar a:hover {
+    color: var(--primary-color);
+}
+
+.navbar a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.navbar a:hover::after {
+    width: 100%;
+}
+
+.login-icon i {
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.login-icon:hover i {
+    color: var(--primary-color);
+}
+
+.bx-menu {
+    display: none; /* Escondido em telas grandes */
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+/* --- SEÇÃO HERO --- */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--text-light);
+    background-image: url('../images/ImagemMecanicaPI.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Sobreposição escura para legibilidade */
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn {
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: var(--text-dark);
+}
+
+.btn-primary:hover {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-3px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 2px solid var(--text-light);
+    color: var(--text-light);
+}
+
+.btn-secondary:hover {
+    background-color: var(--text-light);
+    color: var(--text-dark);
+    transform: translateY(-3px);
+}
+
+
+/* --- LAYOUT DAS SEÇÕES DE CONTEÚDO --- */
+.content-section {
+    padding: 6rem 5%;
+}
+
+.bg-light {
+    background-color: #ffffff; /* Fundo branco para alternar e criar contraste */
+}
+
+.section-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-dark);
+}
+
+.section-description {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 4rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* --- SEÇÃO CONTATO --- */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.contact-card {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.contact-card i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.contact-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+/* --- SEÇÃO LOCALIZAÇÃO --- */
+.location-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+    text-align: left;
+    align-items: center;
+}
+
+.map-container iframe {
+    border-radius: 10px;
+    width: 100%;
+    height: 450px;
+}
+
+.address-container h3 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+}
+.address-container p {
+    line-height: 1.8;
+}
+
+
+/* --- SEÇÃO SERVIÇOS --- */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.service-card {
+    background-color: var(--light-bg);
+    padding: 2.5rem 2rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    border-color: var(--primary-color);
+}
+
+.service-card i {
+    font-size: 3.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.service-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.service-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* --- FOOTER --- */
+footer.main-footer {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    text-align: center;
+    padding: 2rem 5%;
+}
+
+footer.main-footer p {
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+footer.main-footer p:first-child {
+    color: var(--text-light);
+}
+
+/* Adicione ao seu CSS principal */
+
+/* Nova classe para alternar o fundo da seção, se desejar */
+.bg-dark-alt {
+    background-color: var(--dark-card, #2c2c2c); /* Cor de card para dar um leve destaque */
+}
+body.light-mode .bg-dark-alt {
+    background-color: #e9ecef; /* Cor clara alternativa */
+}
+
+.protocol-lookup-container {
+    background-color: var(--card-bg, #1e1e1e);
+    padding: 2.5rem; /* Aumentado para mais respiro */
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); */ /* Sombra já pode vir do .content-section ou outra classe */
+    max-width: 900px;
+    margin: 0 auto; /* Centraliza se o .container do Bootstrap não for suficiente */
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+body.light-mode .protocol-lookup-container {
+    background-color: #ffffff;
+}
+
+.protocol-lookup-container .form-control-lg { /* Para o input maior */
+    padding: 0.75rem 1.25rem;
+    font-size: 1.1rem;
+}
+
+.protocol-lookup-container .btn-lg { /* Para o botão maior */
+    padding: 0.75rem 1.25rem;
+    font-size: 1.1rem;
+}
+
+/* Input de busca */
+.protocol-lookup-container .form-control {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    border-right: none; /* Remove a borda direita para juntar com o botão */
+}
+body.light-mode .protocol-lookup-container .form-control {
+    background-color: #fff;
+    color: #212529;
+    border-color: #ced4da;
+}
+
+.protocol-lookup-container .form-control:focus {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.2); /* Sombra amarela no foco */
+}
+body.light-mode .protocol-lookup-container .form-control:focus {
+    background-color: #fff;
+    color: #212529;
+}
+
+/* Botão de busca */
+.protocol-lookup-container .input-group .btn-primary {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    color: #000; /* Texto preto para o botão amarelo */
+}
+
+/* Card de detalhes do protocolo */
+.protocol-details-card {
+    background-color: var(--dark-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+body.light-mode .protocol-details-card {
+    background-color: #f8f9fa; /* Um pouco diferente do fundo do lookup */
+}
+
+.protocol-details-card p {
+    margin-bottom: 1rem;
+    font-size: 1.05rem; /* Ligeiramente maior */
+    display: flex; /* Para alinhar label e valor */
+    flex-wrap: wrap;
+}
+.protocol-details-card p strong {
+    color: var(--text-muted);
+    min-width: 160px; /* Espaço para o rótulo */
+    margin-right: 10px;
+    font-weight: 600;
+}
+body.light-mode .protocol-details-card p strong {
+    color: #495057;
+}
+.protocol-details-card .detail-value {
+    color: var(--text-light);
+    font-weight: 500;
+}
+body.light-mode .protocol-details-card .detail-value {
+    color: var(--text-light); /* Texto escuro */
+}
+
+
+.protocol-details-card .list-group-item {
+    background-color: transparent;
+    border-color: var(--border-color);
+    color: var(--text-light);
+    padding: 0.75rem 0; /* Ajuste no padding */
+}
+.protocol-details-card .list-group-item:first-child {
+    border-top: none;
+}
+.protocol-details-card .list-group-item:last-child {
+    border-bottom: none;
+}
+body.light-mode .protocol-details-card .list-group-item {
+    color: var(--text-light); /* texto escuro */
+    border-color: #d2d2d2;
+}
+
+
+.border-top-dashed {
+    border-top: 1px dashed var(--border-color);
+}
+body.light-mode .border-top-dashed {
+    border-top-color: #c0c0c0;
+}
+
+/* Classes de Status (reutilizadas do painel do funcionário) */
+.status {
+    padding: 0.25em 0.6em;
+    font-size: 0.85em;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.375rem;
+    text-transform: capitalize;
+}
+.status-Pendente { background-color: var(--status-pending, #f0ad4e); color: #000; }
+.status-Confirmado { background-color: var(--status-approved, #5cb85c); color: #fff; }
+.status-Concluido { background-color: var(--status-completed, #5bc0de); color: #fff; }
+.status-Cancelado { background-color: #d9534f; color: #fff; }
+
+body.light-mode .status-Pendente { background-color: #ffe8af; color: #8a6d3b; }
+body.light-mode .status-Confirmado { background-color: #d4edda; color: #155724; }
+body.light-mode .status-Concluido { background-color: #d1ecf1; color: #0c5460; }
+body.light-mode .status-Cancelado { background-color: #f8d7da; color: #721c24; }
+
+.btn-success { /* Para o botão Gerar PDF */
+    background-color: #28a745;
+    border-color: #28a745;
+    color: white;
+}
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+body.light-mode .btn-success {
+    color: white; /* Manter texto branco para melhor contraste */
+}
+
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 992px) {
+    .navbar {
+        /* Adicionar lógica para menu mobile se necessário */
+        display: none; 
+    }
+    .bx-menu {
+        display: block;
+    }
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    .location-content {
+        grid-template-columns: 1fr;
+    }
+    .address-container {
+        text-align: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    .hero-buttons {
+        flex-direction: column;
+    }
+    .content-section {
+        padding: 4rem 5%;
+    }
+    .section-title {
+        font-size: 2rem;
+    }
+}

@@ -1,0 +1,47 @@
+/* --- ESTILOS PARA O MENU HAMBÚRGUER E MOBILE --- */
+
+/* Por padrão, o ícone do menu só aparece em telas menores */
+#menu-icon {
+    font-size: 35px;
+    color: var(--text-light); /* Use a cor do seu texto */
+    cursor: pointer;
+    z-index: 1001; /* Garante que ele fique acima de outros elementos */
+    display: none; /* Escondido em telas grandes */
+}
+
+/* Media Query para telas menores (ex: tablets e celulares) */
+@media (max-width: 992px) {
+    /* Mostra o ícone do menu */
+    #menu-icon {
+        display: block;
+    }
+
+    /* Esconde a navbar no desktop e a prepara para o mobile */
+    .navbar {
+        position: absolute;
+        top: 100%; /* Começa logo abaixo do header */
+        right: -100%; /* Começa fora da tela, à direita */
+        width: 270px;
+        height: calc(100vh - 100%); /* Ocupa a altura restante */
+        background: #2c2c2c; /* Um fundo para o menu mobile */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding: 30px;
+        transition: all .50s ease; /* Animação suave */
+        border-left: 1px solid var(--primary-color);
+    }
+
+    .navbar a {
+        display: block;
+        margin: 12px 0;
+        padding: 5px;
+        font-size: 1.2rem;
+    }
+
+    /* A classe '.open' que o JavaScript vai adicionar */
+    .navbar.open {
+        right: 0; /* Traz o menu para dentro da tela */
+    }
+}

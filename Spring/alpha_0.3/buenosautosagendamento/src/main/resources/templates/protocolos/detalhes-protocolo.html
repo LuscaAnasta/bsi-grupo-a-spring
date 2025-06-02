@@ -1,430 +1,560 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalhes do Protocolo - Buenos Autos</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="shortcut icon" th:href="@{/images/Logo1.png}" type="image/x-icon">
+    <link rel="stylesheet" th:href="@{/css/funcionario-style.css}">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 25px;
-        }
-
-        .back-link {
-            display: block;
-            text-align: left;
-            margin-bottom: 20px;
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .detail-section {
-            margin-bottom: 20px;
-            border-bottom: 1px dashed #ccc;
-            padding-bottom: 15px;
-        }
-
-        .detail-section:last-child {
-            border-bottom: none;
-        }
-
-        .detail-section h3 {
-            color: #007bff;
-            margin-bottom: 10px;
+        /* Estilos específicos que podem não estar no funcionario-style.css geral */
+        .section-subtitle {
+            color: var(--primary-color, #007bff);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color-light, #dee2e6);
+            font-size: 1.15rem;
+            /* Um pouco menor que h4 */
+            font-weight: 600;
         }
 
         .detail-item {
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
 
         .detail-item strong {
-            display: inline-block;
-            width: 150px;
-            color: #555;
+            color: var(--text-muted-strong, #495057);
+            margin-right: 0.5rem;
         }
 
-        .service-list {
-            list-style: decimal;
-            padding-left: 20px;
-            margin: 0;
+        /* Lista de serviços protocolados */
+        .service-protocol-list {
+            list-style: none;
+            padding-left: 0;
         }
-        .service-list li {
-            margin-bottom: 5px;
-            color: #333;
+
+        .service-protocol-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color-lighter, #e9ecef);
             display: flex;
-            align-items: center;
             justify-content: space-between;
-        }
-        .service-list li small {
-            color: #777;
-        }
-        .remove-service-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            line-height: 25px;
-            text-align: center;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.8em;
-            margin-left: 10px;
-            flex-shrink: 0;
-        }
-        .remove-service-btn:hover {
-            background-color: #c82333;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-weight: bold;
-        }
-
-        .form-group select,
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group textarea {
-            width: calc(100% - 22px);
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .button-group {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .button-group button, .button-group a {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-            display: inline-flex;
             align-items: center;
-            justify-content: center;
         }
 
-        .button-group .save-button, .button-group .submit-button {
-            background-color: #28a745;
-            color: white;
+        .service-protocol-list li:last-child {
+            border-bottom: none;
         }
 
-        .button-group .save-button:hover, .button-group .submit-button:hover {
-            background-color: #218838;
+        .service-protocol-list small {
+            font-size: 0.85em;
+            color: var(--text-muted, #6c757d);
         }
 
-        .button-group .cancel-button {
-            background-color: #dc3545;
-            color: white;
+        /* Botão de remover serviço na lista */
+        .remove-service-btn-icon {
+            /* Para usar com ícone */
+            padding: 0.25rem 0.5rem;
+            /* Menor padding para botão só com ícone */
         }
 
-        .button-group .cancel-button:hover {
-            background-color: #c82333;
+        /* Para os fieldsets dos formulários internos */
+        fieldset.custom-fieldset {
+            border: 1px solid var(--border-color-light, #dee2e6);
+            border-radius: 0.375rem;
+            /* Bootstrap's default */
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
-        .button-group .complete-button { /* Novo estilo para botões de conclusão */
-            background-color: #007bff;
-            color: white;
-        }
-
-        .button-group .complete-button:hover {
-            background-color: #0056b3;
-        }
-
-        .alert-message {
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: bold;
-        }
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        fieldset {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        legend {
-            font-weight: bold;
-            color: #007bff;
-            padding: 0 10px;
+        fieldset.custom-fieldset legend {
+            font-weight: 600;
+            color: var(--primary-color, #007bff);
+            padding: 0 0.5rem;
+            width: auto;
+            /* Para o legend não ocupar toda a largura */
+            font-size: 1rem;
+            /* Um pouco menor */
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <a th:href="@{/protocolos/listar}" class="back-link">Voltar para Gerenciar Protocolos</a>
-
-        <h1>Detalhes do Protocolo <span th:text="${protocolo.numeroProtocolo}"></span></h1>
-
-        <div th:if="${mensagemSucesso}" class="alert-message alert-success" th:text="${mensagemSucesso}"></div>
-        <div th:if="${mensagemErro}" class="alert-message alert-error" th:text="${mensagemErro}"></div>
-
-        <div class="detail-section">
-            <h3>Informações Gerais</h3>
-            <div class="detail-item"><strong>ID Interno:</strong> <span th:text="${protocolo.id}"></span></div>
-            <div class="detail-item"><strong>Número do Protocolo:</strong> <span th:text="${protocolo.numeroProtocolo}"></span></div>
-            <div class="detail-item"><strong>Data do Protocolo:</strong> <span th:text="${#temporals.format(protocolo.dataProtocolo, 'dd/MM/yyyy')}"></span></div>
-            <div class="detail-item"><strong>Data Agendada:</strong> <span th:text="${#temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy')}"></span></div>
-            <div class="detail-item"><strong>Status Atual:</strong> <span th:text="${protocolo.statusProtocolo.name().replace('_', ' ')}"></span></div>
-        </div>
-
-        <div class="detail-section">
-            <h3>Dados da Solicitação</h3>
-            <div class="detail-item"><strong>Solicitação ID:</strong> <span th:text="${protocolo.solicitacao.id}"></span></div>
-            <div class="detail-item"><strong>Cliente:</strong> <span th:text="${protocolo.solicitacao.nome}"></span> (<span th:text="${protocolo.solicitacao.cpf}"></span>)</div>
-            <div class="detail-item"><strong>Contato:</strong> <span th:text="${protocolo.solicitacao.email}"></span> / <span th:text="${protocolo.solicitacao.telefone}"></span></div>
-            <div class="detail-item"><strong>Veículo:</strong> <span th:text="${protocolo.solicitacao.marca + ' ' + protocolo.solicitacao.modelo + ' (' + protocolo.solicitacao.ano + ')'}"></span></div>
-            <div class="detail-item"><strong>Placa:</strong> <span th:text="${protocolo.solicitacao.placa}"></span></div>
-            <div class="detail-item"><strong>Data Solicitada:</strong> <span th:text="${#temporals.format(protocolo.solicitacao.dataSolicitacao, 'dd/MM/yyyy HH:mm')}"></span></div>
-            <div class="detail-item"><strong>Data Agendamento Original:</strong> <span th:text="${#temporals.format(protocolo.solicitacao.dataAgendada, 'dd/MM/yyyy HH:mm')}"></span></div>
-        </div>
-
-        <div class="detail-section">
-            <h3>Serviços Protocolados</h3>
-            <div th:if="${#lists.isEmpty(protocolo.servicosProtocolo)}">
-                <p>Nenhum serviço associado a este protocolo.</p>
+    <div class="dashboard-layout active">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a th:href="@{/dashboard}"
+                    style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <img th:src="@{/images/Logo1.png}" alt="Logo Bueno Autos" class="sidebar-logo">
+                    <span>Bueno Autos</span>
+                </a>
             </div>
-            <ol class="service-list" th:unless="${#lists.isEmpty(protocolo.servicosProtocolo)}">
-                <li th:each="item : ${protocolo.servicosProtocolo}">
-                    <div>
-                        <strong><span th:text="${item.nomeServico}"></span></strong>
-                        (Código: <span th:text="${item.codigoServico}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.precoServico, 1, 2)}"></span>)<br>
-                        <small th:if="${item.observacoes}">Observações: <span th:text="${item.observacoes}"></span></small>
-                    </div>
-                    <form th:action="@{/protocolos/remover-servico-item/{protocoloId}/{itemId}(protocoloId=${protocolo.id}, itemId=${item.id})}" method="post"
-                          onsubmit="return confirm('Tem certeza que deseja remover este serviço do protocolo?');"
-                          th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-                        <button type="submit" class="remove-service-btn">X</button>
-                    </form>
-                </li>
-            </ol>
-        </div>
+            <nav class="sidebar-nav">
+                <a th:href="@{/dashboard}" class="nav-link"><i class="ri-home-4-line"></i> Dashboard</a>
+                <a th:href="@{/solicitacoes/listar}" class="nav-link"><i class="ri-calendar-check-line"></i>
+                    Solicitações</a>
+                <a th:href="@{/disponibilidade}" class="nav-link"><i class="ri-calendar-todo-line"></i>
+                    Disponibilidade</a>
+                <a th:href="@{/servicos/gerenciar}" class="nav-link"><i class="ri-tools-line"></i> Serviços</a>
+                <a th:href="@{/protocolos/listar}" class="nav-link active"><i class="ri-barcode-box-line"></i>
+                    Protocolos</a>
+            </nav>
+            <div class="sidebar-footer"><a th:href="@{/logout}" class="nav-link logout"><i
+                        class="ri-logout-box-r-line"></i> Sair</a></div>
+        </aside>
 
-        <div class="detail-section" th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-            <h3>Adicionar Serviço ao Protocolo</h3>
-            <form th:action="@{/protocolos/adicionar-servico-direto/{protocoloId}(protocoloId=${protocolo.id})}" method="post">
-                <fieldset>
-                    <legend>Adicionar Serviço Existente</legend>
-                    <div class="form-group">
-                        <label for="servicoExistenteId">Selecionar Serviço:</label>
-                        <select id="servicoExistenteId" name="servicoExistenteId" onchange="toggleNovoServicoFields()">
-                            <option value="">-- Selecione um serviço existente --</option>
-                            <option th:each="servico : ${servicosDisponiveis}"
-                                    th:value="${servico.id}"
-                                    th:text="${servico.nome + ' (R$ ' + #numbers.formatDecimal(servico.preco, 1, 2) + ')'}"></option>
-                        </select>
-                    </div>
-                </fieldset>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Detalhes do Protocolo #<span th:text="${protocolo.numeroProtocolo}"></span></h1>
+            </header>
+            <section class="content-body">
+                <div class="p-3 mb-4"
+                    style="background-color: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color);">
 
-                <fieldset id="novoServicoSection">
-                    <legend>Ou Criar Novo Serviço Dinâmico</legend>
-                    <div class="form-group">
-                        <label for="novoServicoNome">Nome do Novo Serviço:</label>
-                        <input type="text" id="novoServicoNome" name="novoServicoNome">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="section-subtitle mb-0">Informações Gerais</h5>
+                        <button type="button" class="btn btn-sm btn-outline-primary"
+                            onclick="gerarComprovanteProtocoloPDF()">
+                            <i class="ri-file-pdf-2-line me-1"></i>Gerar Comprovante PDF
+                        </button>
                     </div>
-                    <div class="form-group">
-                        <label for="novoServicoPreco">Preço do Novo Serviço (R$):</label>
-                        <input type="number" step="0.01" id="novoServicoPreco" name="novoServicoPreco">
-                    </div>
-                </fieldset>
 
-                <div class="form-group">
-                    <label for="observacoesNovoServico">Observações para este Serviço no Protocolo:</label>
-                    <textarea id="observacoesNovoServico" name="observacoesNovoServico" rows="3"></textarea>
+                    <div class="mb-4">
+                        <a th:href="@{/protocolos/listar}" class="btn btn-sm btn-outline-secondary">
+                            <i class="ri-arrow-left-line me-1"></i>Voltar para Gerenciar Protocolos
+                        </a>
+                    </div>
+
+                    <div th:if="${mensagemSucesso}" class="alert alert-success" role="alert"
+                        th:text="${mensagemSucesso}"></div>
+                    <div th:if="${mensagemErro}" class="alert alert-danger" role="alert" th:text="${mensagemErro}">
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="section-subtitle">Informações Gerais</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>ID Interno:</strong> <span
+                                        th:text="${protocolo.id}"></span></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Número:</strong> <span
+                                        th:text="${protocolo.numeroProtocolo}"></span></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Data do Protocolo:</strong> <span
+                                        th:text="${#temporals.format(protocolo.dataProtocolo, 'dd/MM/yyyy')}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Data Agendada:</strong> <span
+                                        th:text="${#temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy')}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Status Atual:</strong>
+                                    <span th:text="${protocolo.statusProtocolo.name().replace('_', ' ')}"
+                                        th:classappend="${protocolo.statusProtocolo != null ? 'status-' + #strings.toLowerCase(protocolo.statusProtocolo.name()) : 'status-desconhecido'}"
+                                        class="badge"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="section-subtitle">Dados da Solicitação Original</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Solicitação ID:</strong> <span
+                                        th:text="${protocolo.solicitacao.id}"></span></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Cliente:</strong> <span
+                                        th:text="${protocolo.solicitacao.nome}"></span> (<span
+                                        th:text="${protocolo.solicitacao.cpf}"></span>)</div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="detail-item"><strong>Contato:</strong> <span
+                                        th:text="${protocolo.solicitacao.email}"></span> / <span
+                                        th:text="${protocolo.solicitacao.telefone}"></span></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Veículo:</strong> <span
+                                        th:text="${protocolo.solicitacao.marca + ' ' + protocolo.solicitacao.modelo + ' (' + protocolo.solicitacao.ano + ')'}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Placa:</strong> <span
+                                        th:text="${protocolo.solicitacao.placa}"></span></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Data Solicitada:</strong> <span
+                                        th:text="${#temporals.format(protocolo.solicitacao.dataSolicitacao, 'dd/MM/yyyy HH:mm')}"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="detail-item"><strong>Agendamento Original:</strong> <span
+                                        th:text="${#temporals.format(protocolo.solicitacao.dataAgendada, 'dd/MM/yyyy HH:mm')}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5 class="section-subtitle">Serviços Protocolados</h5>
+                        <div th:if="${#lists.isEmpty(protocolo.servicosProtocolo)}" class="alert alert-light text-muted"
+                            role="alert">
+                            Nenhum serviço associado a este protocolo.
+                        </div>
+                        <ul class="list-group service-protocol-list"
+                            th:unless="${#lists.isEmpty(protocolo.servicosProtocolo)}">
+                            <li class="list-group-item" th:each="item : ${protocolo.servicosProtocolo}">
+                                <div>
+                                    <strong><span th:text="${item.nomeServico}"></span></strong>
+                                    (Cód: <span th:text="${item.codigoServico}"></span>, Preço: R$ <span
+                                        th:text="${#numbers.formatDecimal(item.precoServico, 1, 'COMMA', 2, 'POINT')}"></span>)<br>
+                                    <small th:if="${item.observacoes}">Obs: <span
+                                            th:text="${item.observacoes}"></span></small>
+                                </div>
+                                <form
+                                    th:action="@{/protocolos/remover-servico-item/{protocoloId}/{itemId}(protocoloId=${protocolo.id}, itemId=${item.id})}"
+                                    method="post"
+                                    onsubmit="return confirm('Tem certeza que deseja remover este serviço do protocolo?');"
+                                    th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                                    <button type="submit" class="btn btn-sm btn-danger remove-service-btn-icon"
+                                        title="Remover Serviço">
+                                        <i class="ri-delete-bin-line"></i>
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4"
+                        th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                        <h5 class="section-subtitle">Adicionar Serviço ao Protocolo</h5>
+                        <form
+                            th:action="@{/protocolos/adicionar-servico-direto/{protocoloId}(protocoloId=${protocolo.id})}"
+                            method="post">
+                            <fieldset class="custom-fieldset mb-3">
+                                <legend>Adicionar Serviço Existente</legend>
+                                <div class="mb-3">
+                                    <label for="servicoExistenteId" class="form-label">Selecionar Serviço:</label>
+                                    <select id="servicoExistenteId" name="servicoExistenteId" class="form-select"
+                                        onchange="toggleNovoServicoFields()">
+                                        <option value="">-- Selecione um serviço existente --</option>
+                                        <option th:each="servico : ${servicosDisponiveis}" th:value="${servico.id}"
+                                            th:text="${servico.nome + ' (R$ ' + #numbers.formatDecimal(servico.preco, 1, 'COMMA', 2, 'POINT') + ')'}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </fieldset>
+
+                            <fieldset class="custom-fieldset" id="novoServicoSection">
+                                <legend>Ou Criar Novo Serviço Dinâmico</legend>
+                                <div class="row">
+                                    <div class="col-md-8 mb-3">
+                                        <label for="novoServicoNome" class="form-label">Nome do Novo Serviço:</label>
+                                        <input type="text" id="novoServicoNome" name="novoServicoNome"
+                                            class="form-control">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="novoServicoPreco" class="form-label">Preço (R$):</label>
+                                        <input type="number" step="0.01" id="novoServicoPreco" name="novoServicoPreco"
+                                            class="form-control" placeholder="Ex: 50.00">
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <div class="mb-3 mt-3">
+                                <label for="observacoesNovoServico" class="form-label">Observações para este Serviço no
+                                    Protocolo:</label>
+                                <textarea id="observacoesNovoServico" name="observacoesNovoServico" rows="3"
+                                    class="form-control"></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-success"><i
+                                        class="ri-add-circle-line me-1"></i>Adicionar Serviço</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="mb-3">
+                        <h5 class="section-subtitle">Gerenciar Status do Protocolo</h5>
+                        <form th:action="@{/protocolos/salvar-status/{id}(id=${protocolo.id})}" method="post"
+                            class="row g-3 align-items-end">
+                            <div class="col-auto flex-grow-1">
+                                <label for="statusProtocolo" class="form-label">Alterar Status:</label>
+                                <select id="statusProtocolo" name="novoStatus" class="form-select">
+                                    <option th:each="status : ${statusOptions}" th:value="${status}"
+                                        th:text="${status.name().replace('_', ' ')}"
+                                        th:selected="${status == protocolo.statusProtocolo}">Status</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary"
+                                    th:disabled="${protocolo.statusProtocolo.name().startsWith('CONCLUIDO') or protocolo.statusProtocolo == T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                                    <i class="ri-save-3-line me-1"></i>Salvar Alterações
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="mt-3 d-flex flex-wrap gap-2 justify-content-end">
+                            <form th:action="@{/protocolos/concluir/{id}(id=${protocolo.id})}" method="post"
+                                onsubmit="return confirm('Confirmar conclusão do serviço? Status: AGUARDANDO RETIRADA DO CLIENTE.');"
+                                th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                                <input type="hidden" name="statusConclusao"
+                                    th:value="${T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE}" />
+                                <button type="submit" class="btn btn-info"><i
+                                        class="ri-user-received-2-line me-1"></i>Concluir (Aguardando Retirada)</button>
+                            </form>
+
+                            <form th:action="@{/protocolos/concluir/{id}(id=${protocolo.id})}" method="post"
+                                onsubmit="return confirm('Confirmar conclusão FINALIZADA do serviço?');"
+                                th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO_FINALIZADO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
+                                <input type="hidden" name="statusConclusao"
+                                    th:value="${T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO_FINALIZADO}" />
+                                <button type="submit" class="btn btn-success"><i
+                                        class="ri-check-double-line me-1"></i>Concluir (Finalizado)</button>
+                            </form>
+                        </div>
+
+                        <form id="cancelForm" th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
+                            onsubmit="return confirmCancelation();"
+                            th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}"
+                            class="mt-3">
+                            <div class="mb-3">
+                                <label for="observacoesCancelamento" class="form-label">Observações para Cliente
+                                    (Cancelamento):</label>
+                                <textarea id="observacoesCancelamento" name="observacoesCancelamento" rows="3"
+                                    class="form-control"
+                                    placeholder="Ex: Não foi possível realizar o serviço devido a falta de peças."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-danger"><i
+                                        class="ri-close-circle-line me-1"></i>Cancelar Protocolo</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-                <div class="button-group">
-                    <button type="submit" class="submit-button">Adicionar Serviço</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="detail-section">
-            <h3>Gerenciar Status do Protocolo</h3>
-            <form th:action="@{/protocolos/salvar-status/{id}(id=${protocolo.id})}" method="post">
-                <div class="form-group">
-                    <label for="statusProtocolo">Alterar Status:</label>
-                    <select id="statusProtocolo" name="novoStatus">
-                        <option th:each="status : ${statusOptions}"
-                                th:value="${status}"
-                                th:text="${status.name().replace('_', ' ')}"
-                                th:selected="${status == protocolo.statusProtocolo}">Status</option>
-                    </select>
-                </div>
-                <div class="button-group">
-                    <button type="submit" class="save-button"
-                            th:disabled="${protocolo.statusProtocolo.name().startsWith('CONCLUIDO') or protocolo.statusProtocolo == T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-                        Salvar Alterações
-                    </button>
-                </div>
-            </form>
-
-            <div class="button-group" style="margin-top: 15px;">
-                <form th:action="@{/protocolos/concluir/{id}(id=${protocolo.id})}" method="post"
-                      onsubmit="return confirm('Confirmar conclusão do serviço? Status: AGUARDANDO RETIRADA DO CLIENTE.');"
-                      th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-                    <input type="hidden" name="statusConclusao" th:value="${T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE}" />
-                    <button type="submit" class="complete-button">Concluir (Aguardando Retirada)</button>
-                </form>
-
-                <form th:action="@{/protocolos/concluir/{id}(id=${protocolo.id})}" method="post"
-                      onsubmit="return confirm('Confirmar conclusão FINALIZADA do serviço?');"
-                      th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO_FINALIZADO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-                    <input type="hidden" name="statusConclusao" th:value="${T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CONCLUIDO_FINALIZADO}" />
-                    <button type="submit" class="complete-button">Concluir (Finalizado)</button>
-                </form>
-
-                <form id="cancelForm" th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
-                      onsubmit="return confirmCancelation();"
-                      th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-                    
-                    <div class="form-group" style="width: 100%; margin-top: 10px;">
-                        <label for="observacoesCancelamento">Observações para o Cliente (Cancelamento):</label>
-                        <textarea id="observacoesCancelamento" name="observacoesCancelamento" rows="3" placeholder="Ex: 'Não foi possível realizar o serviço devido a falta de peças.'"></textarea>
-                    </div>
-                    <div class="button-group" style="width: 100%; justify-content: flex-end;">
-                        <button type="submit" class="cancel-button">Cancelar Protocolo</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
+
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // Usar uma variável JS para o status atual
-        const currentStatus = [[${protocolo.statusProtocolo}]];
 
-        // Mapear os status que indicam um estado "finalizado" para desabilitar edições
+        // ... (suas constantes injetadas pelo Thymeleaf e lógica de isFinalState permanecem aqui em cima) ...
+        const protocoloStatusEnumName = /*[[${protocolo?.statusProtocolo?.name()}]]*/ || null;
+        const currentProtocolo = /*[[${protocolo}]]*/ || null;
+        const dataProtocoloFormatada = /*[[${protocolo?.dataProtocolo != null ? #temporals.format(protocolo.dataProtocolo, 'dd/MM/yyyy') : null}]]*/ || 'N/A';
+        const dataAgendadaFormatada = /*[[${protocolo?.dataAgendadaProtocolo != null ? #temporals.format(protocolo.dataAgendadaProtocolo, 'dd/MM/yyyy') : null}]]*/ || 'N/A';
+        const statusProtocoloDisplay = /*[[${protocolo?.statusProtocolo != null ? protocolo.statusProtocolo.name().replace('_', ' ') : null}]]*/ || 'N/A';
+        const servicosProtocolados = /*[[${protocolo?.servicosProtocolo}]]*/ || [];
+        const logoPath = /*[[@{/images/Logo1.png}]]*/ || '/images/default-logo.png';
+
         const finalStates = [
             'CONCLUIDO_AGUARDANDO_RETIDADA_CLIENTE',
             'CONCLUIDO_FINALIZADO',
             'CANCELADO',
-            'NAO_COMPARECEU' // Adicione NAO_COMPARECEU como estado final se não permitir edições
+            'NAO_COMPARECEU'
         ];
-        const isFinalState = finalStates.includes(currentStatus);
+        const isFinalState = protocoloStatusEnumName ? finalStates.includes(protocoloStatusEnumName) : false;
 
-        const selectElement = document.getElementById('statusProtocolo');
-        const saveButton = document.querySelector('.save-button');
-        const removeServiceBtns = document.querySelectorAll('.remove-service-btn');
-        const addServiceSection = document.querySelector('.detail-section:nth-child(4)'); // A seção de adicionar serviço
-
-        // Desabilita formulário de status e botões de ação se o protocolo estiver em um estado final
+        const selectStatusElement = document.getElementById('statusProtocolo');
+        const saveStatusButton = document.querySelector('form[action*="/protocolos/salvar-status"] button[type="submit"]');
+        // ... (outros seletores e lógica if (isFinalState) ... )
         if (isFinalState) {
-            if (selectElement) {
-                selectElement.disabled = true;
-            }
-            if (saveButton) {
-                saveButton.disabled = true;
-                saveButton.textContent = "Status Finalizado";
-                saveButton.style.backgroundColor = "#6c757d";
-                saveButton.style.cursor = "not-allowed";
-            }
-            // Desabilita todos os botões de remoção de serviço
-            removeServiceBtns.forEach(btn => {
-                btn.disabled = true;
-                btn.style.opacity = "0.5";
-                btn.style.cursor = "not-allowed";
-            });
-            // Oculta/desabilita a seção de adicionar serviço
-            if (addServiceSection) {
-                 addServiceSection.style.display = 'none'; // Ou mudar opacidade para indicar desabilitado
-            }
+            if (selectStatusElement) { selectStatusElement.disabled = true; }
+            if (saveStatusButton) { saveStatusButton.disabled = true; }
+            // ... etc ...
         }
 
-        // Lógica para alternar campos de novo serviço dinâmico
+
+        let pdfGenerationAttempts = 0; // Contador de tentativas
+
+        window.gerarComprovanteProtocoloPDF = function () {
+            // pdfGenerationAttempts++;
+            // const currentAttempt = pdfGenerationAttempts;
+            // console.log(`[Tentativa ${currentAttempt}] INICIANDO gerarComprovanteProtocoloPDF`);
+
+            // // 1. TENTE ABRIR A JANELA PRIMEIRO
+            // const printWindow = window.open('', '_blank', 'height=700,width=900,noopener,noreferrer');
+            // console.log(`[Tentativa ${currentAttempt}] Resultado de window.open:`, printWindow);
+
+            // if (!printWindow) {
+            //     alert('Não foi possível abrir a janela de impressão. Verifique se o seu navegador está bloqueando pop-ups.');
+            //     console.error(`[Tentativa ${currentAttempt}] FALHA ao abrir printWindow.`);
+            //     return; 
+            // }
+            // console.log(`[Tentativa ${currentAttempt}] Janela pop-up aberta com sucesso ou já estava aberta.`);
+
+            pdfGenerationAttempts++;
+            const currentAttempt = pdfGenerationAttempts;
+            console.log(`[Tentativa ${currentAttempt}] INICIANDO gerarComprovanteProtocoloPDF`);
+
+            // 1. USE OS PARÂMETROS EXATOS DO TESTE MÍNIMO QUE FUNCIONOU:
+            const printWindow = window.open('', '_blank', 'width=700,height=900');
+            console.log(`[Tentativa ${currentAttempt}] Resultado de window.open (com params do teste mínimo):`, printWindow);
+
+            if (!printWindow) {
+                alert('Não foi possível abrir a janela de impressão (MESMO COM PARAMS DO TESTE MÍNIMO). Verifique bloqueador.');
+                console.error(`[Tentativa ${currentAttempt}] FALHA ao abrir printWindow com params do teste mínimo.`);
+                return;
+            }
+            console.log(`[Tentativa ${currentAttempt}] Janela pop-up aberta com sucesso (com params do teste mínimo).`);
+
+
+            // 2. VERIFIQUE OS DADOS ESSENCIAIS
+            console.log(`[Tentativa ${currentAttempt}] Verificando currentProtocolo:`, currentProtocolo);
+            if (!currentProtocolo || !currentProtocolo.solicitacao) {
+                alert('Dados cruciais do protocolo ou da solicitação não estão carregados! Verifique o console.');
+                console.error(`[Tentativa ${currentAttempt}] Erro: currentProtocolo ou currentProtocolo.solicitacao está nulo/indefinido.`, currentProtocolo);
+                if (printWindow && !printWindow.closed) {
+                    printWindow.close();
+                }
+                console.log(`[Tentativa ${currentAttempt}] SAINDO de gerarComprovanteProtocoloPDF devido a dados ausentes.`);
+                return;
+            }
+            console.log(`[Tentativa ${currentAttempt}] Dados de currentProtocolo e solicitacao OK.`);
+
+            // 3. LOGS DE DEPURAÇÃO (AGORA NO LUGAR CERTO)
+            try {
+                console.log(`[Tentativa ${currentAttempt}] Dados para PDF - currentProtocolo:`, JSON.parse(JSON.stringify(currentProtocolo)));
+                console.log(`[Tentativa ${currentAttempt}] Dados para PDF - servicosProtocolados:`, JSON.parse(JSON.stringify(servicosProtocolados)));
+            } catch (e) {
+                console.warn(`[Tentativa ${currentAttempt}] Erro ao tentar fazer log profundo de currentProtocolo/servicosProtocolados, logando diretamente:`, e);
+                console.log(`[Tentativa ${currentAttempt}] Dados para PDF (direto) - currentProtocolo:`, currentProtocolo);
+                console.log(`[Tentativa ${currentAttempt}] Dados para PDF (direto) - servicosProtocolados:`, servicosProtocolados);
+            }
+            console.log(`[Tentativa ${currentAttempt}] Dados para PDF - dataProtocoloFormatada:`, dataProtocoloFormatada);
+            // ... (outros logs de dados se necessário) ...
+
+            // 4. PREPARE O CONTEÚDO
+            let logoSrcFinal = logoPath;
+            const sidebarLogoImage = document.querySelector('img.sidebar-logo');
+            if (sidebarLogoImage && sidebarLogoImage.src) {
+                try {
+                    let tempUrl = new URL(sidebarLogoImage.src, window.location.origin);
+                    logoSrcFinal = tempUrl.href;
+                } catch (e) {
+                    console.warn(`[Tentativa ${currentAttempt}] Não foi possível resolver o src do logo da sidebar:`, e);
+                }
+            }
+            console.log(`[Tentativa ${currentAttempt}] logoSrcFinal:`, logoSrcFinal);
+
+            let servicosHtml = '';
+            let valorTotalServicos = 0;
+            // ... (SUA LÓGICA COMPLETA PARA servicosHtml e valorTotalFormatado AQUI) ...
+            if (servicosProtocolados && servicosProtocolados.length > 0) {
+                servicosHtml = `
+                <h4 style="font-size: 16px; font-weight: 600; margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">Serviços no Protocolo</h4>
+                <ul style="list-style: none; padding: 0; margin:0;">`;
+                servicosProtocolados.forEach(item => {
+                    const precoServico = (typeof item.precoServico === 'number') ? item.precoServico : 0;
+                    const precoFormatado = precoServico.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    valorTotalServicos += precoServico;
+                    let codigoServicoDisplay = item.codigoServico ? ` (Cód: ${item.codigoServico})` : '';
+                    let observacoesFormatadas = item.observacoes ? String(item.observacoes).replace(/\n/g, "<br>") : '';
+                    let observacoesDisplay = observacoesFormatadas ? `<br><small style="color: #555;"><em>Obs: ${observacoesFormatadas}</em></small>` : '';
+
+                    servicosHtml += `
+                    <li style="padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px;">
+                        <strong>${item.nomeServico || 'Serviço não especificado'}</strong>
+                        ${codigoServicoDisplay} - ${precoFormatado}
+                        ${observacoesDisplay}
+                    </li>`;
+                });
+                servicosHtml += `</ul>`;
+            } else {
+                servicosHtml = '<p style="font-size:13px; color:#555;">Nenhum serviço específico detalhado neste protocolo.</p>';
+            }
+            const valorTotalFormatado = valorTotalServicos.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            const conteudoPDF = `
+            <html>
+                <head>
+                    <title>Comprovante Protocolo ${currentProtocolo.numeroProtocolo || 'N/D'}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        /* SEUS ESTILOS CSS COMPLETOS AQUI */
+                        body { font-family: 'Poppins', sans-serif; margin: 0; padding: 0; color: #333; background-color: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                        .print-container { padding: 25px; max-width: 750px; margin: auto; }
+                        .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ddd; padding-bottom: 15px; margin-bottom: 20px; }
+                        .header img { max-width: 120px; max-height: 60px; object-fit: contain; }
+                        .header-info { text-align: right; }
+                        .header-info h2 { margin: 0 0 5px 0; font-size: 20px; color: #000; }
+                        .header-info p { margin: 2px 0; font-size: 12px; }
+                        /* ... (resto dos seus estilos) ... */
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                         <div class="header"> <img src="${logoSrcFinal}" alt="Logo Bueno Autos"> <div class="header-info"> <h2>Comprovante de Protocolo</h2> <p><strong>Nº Protocolo:</strong> ${currentProtocolo.numeroProtocolo || 'N/A'}</p> <p><strong>Data Emissão PDF:</strong> ${new Date().toLocaleDateString('pt-BR')}</p> </div> </div>
+                         <h3 class="section-title">Informações Gerais do Protocolo</h3> <div class="data-grid"> <div class="data-item"><strong>ID Interno:</strong> <span>${currentProtocolo.id || 'N/A'}</span></div> <div class="data-item"><strong>Data do Protocolo:</strong> <span>${dataProtocoloFormatada}</span></div> <div class="data-item"><strong>Data Agendada:</strong> <span>${dataAgendadaFormatada}</span></div> <div class="data-item"><strong>Status Atual:</strong> <span>${statusProtocoloDisplay}</span></div> </div>
+                         <h3 class="section-title">Dados do Cliente</h3> <div class="data-grid"> <div class="data-item"><strong>Nome:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.nome) || 'N/A'}</span></div> <div class="data-item"><strong>CPF:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.cpf) || 'N/A'}</span></div> <div class="data-item"><strong>Email:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.email) || 'Não informado'}</span></div> <div class="data-item"><strong>Telefone:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.telefone) || 'N/A'}</span></div> </div>
+                         <h3 class="section-title">Dados do Veículo</h3> <div class="data-grid"> <div class="data-item"><strong>Marca:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.marca) || 'N/A'}</span></div> <div class="data-item"><strong>Modelo:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.modelo) || 'N/A'}</span></div> <div class="data-item"><strong>Ano:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.ano) || 'N/A'}</span></div> <div class="data-item"><strong>Placa:</strong> <span>${(currentProtocolo.solicitacao && currentProtocolo.solicitacao.placa) || 'N/A'}</span></div> </div>
+                         ${servicosHtml}
+                         <div class="total-section"> Valor Total dos Serviços: ${valorTotalFormatado} </div>
+                         <div class="signature-section"> <div class="signature-line"></div> <p style="text-align: center; font-size: 11px;">Assinatura do Cliente</p> </div>
+                         <div class="footer"> <p><strong>Bueno Autos</strong></p> <p>Rua João da Costa Moreira, 11 - Jardim Eliana - São Paulo/SP - CEP 00000-001</p> <p>Contato: (11) 99999-8888 | www.buenosautos.com.br (site fictício)</p> <p>Obrigado pela preferência!</p> </div>
+                    </div>
+                </body>
+            </html>`;
+
+            console.log(`[Tentativa ${currentAttempt}] HTML DO COMPROVANTE FINAL GERADO (primeiros 500 caracteres):`, conteudoPDF.substring(0, 500));
+
+            // 5. ESCREVA NA JANELA E IMPRIMA
+            if (printWindow && !printWindow.closed) {
+                printWindow.document.write(conteudoPDF);
+                console.log(`[Tentativa ${currentAttempt}] Conteúdo escrito na printWindow.`);
+                printWindow.document.close();
+                console.log(`[Tentativa ${currentAttempt}] printWindow.document.close() chamado.`);
+
+                setTimeout(() => {
+                    if (printWindow && !printWindow.closed) {
+                        console.log(`[Tentativa ${currentAttempt}] Dentro do setTimeout, antes de print().`);
+                        printWindow.focus();
+                        printWindow.print();
+                        console.log(`[Tentativa ${currentAttempt}] print() chamado.`);
+                    } else {
+                        console.warn(`[Tentativa ${currentAttempt}] Dentro do setTimeout: A janela de impressão foi fechada antes que a impressão pudesse ser acionada ou não está acessível.`);
+                    }
+                }, 700); // Aumentei um pouco o timeout para dar mais tempo
+            } else {
+                console.error(`[Tentativa ${currentAttempt}] A printWindow foi fechada ou tornou-se inválida antes de escrever o conteúdo.`);
+            }
+            console.log(`[Tentativa ${currentAttempt}] SAINDO de gerarComprovanteProtocoloPDF (fim da função).`);
+        };
+
+        // ... (SUAS FUNÇÕES toggleNovoServicoFields e confirmCancelation AQUI) ...
         function toggleNovoServicoFields() {
-            var servicoExistenteId = document.getElementById('servicoExistenteId').value;
-            var novoServicoSection = document.getElementById('novoServicoSection');
-            var novoServicoNomeInput = document.getElementById('novoServicoNome');
-            var novoServicoPrecoInput = document.getElementById('novoServicoPreco');
-
-            if (servicoExistenteId) {
-                novoServicoSection.style.opacity = "0.5";
-                novoServicoNomeInput.disabled = true;
-                novoServicoPrecoInput.disabled = true;
-                novoServicoNomeInput.value = '';
-                novoServicoPrecoInput.value = '';
-                novoServicoNomeInput.removeAttribute('required');
-                novoServicoPrecoInput.removeAttribute('required');
-            } else {
-                novoServicoSection.style.opacity = "1";
-                novoServicoNomeInput.disabled = false;
-                novoServicoPrecoInput.disabled = false;
-                // Você pode adicionar required aqui se quiser que um novo serviço exija esses campos
-                // novoServicoNomeInput.setAttribute('required', '');
-                // novoServicoPrecoInput.setAttribute('required', '');
-            }
+            // ... sua lógica ...
         }
-
-
         function confirmCancelation() {
-            var observacoes = document.getElementById('observacoesCancelamento').value;
-            var confirmMessage = 'ATENÇÃO: Tem certeza que deseja CANCELAR este protocolo? Essa ação é irreversível.';
-
-            if (observacoes.trim() !== '') {
-                confirmMessage += '\n\nObservação para o Cliente:\n"' + observacoes + '"';
-            } else {
-                confirmMessage += '\n\nATENÇÃO: Nenhuma observação de cancelamento foi fornecida. Deseja continuar assim mesmo?';
-            }
-
-            return confirm(confirmMessage);
+            // ... sua lógica ...
         }
 
-        
-        document.addEventListener('DOMContentLoaded', toggleNovoServicoFields);
+        // Event Listener para o DOM
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof toggleNovoServicoFields === 'function') {
+                toggleNovoServicoFields();
+            }
+            // ... (sua lógica if(isFinalState) para desabilitar botões) ...
+        });
+
         /*]]>*/
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

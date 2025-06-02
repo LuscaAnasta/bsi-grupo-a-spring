@@ -4,50 +4,205 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmar Solicitação de Agendamento</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="shortcut icon" th:href="@{/images/Logo1.png}" type="image/x-icon">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 100%; max-width: 600px; }
-        h1, h2 { color: #333; text-align: center; margin-bottom: 20px; }
-        .detail-section { margin-bottom: 20px; border-bottom: 1px dashed #ccc; padding-bottom: 15px; }
-        .detail-section:last-child { border-bottom: none; }
-        .detail-section h3 { color: #007bff; margin-bottom: 10px; }
-        .detail-item { margin-bottom: 8px; }
-        .detail-item strong { display: inline-block; width: 120px; color: #555; }
-        .service-list { list-style: disc; padding-left: 20px; margin: 0; }
-        .service-list li { margin-bottom: 5px; color: #333; }
-        .button-group { display: flex; justify-content: space-between; gap: 10px; margin-top: 20px; }
-        .button-group button, .button-group a { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-        .confirm-button { background-color: #28a745; color: white; }
-        .confirm-button:hover { background-color: #218838; }
-        .back-button { background-color: #007bff; color: white; }
-        .back-button:hover { background-color: #0056b3; }
-        .error-message { color: #dc3545; font-size: 0.9em; margin-top: 5px; text-align: center; }
-        .success-message { color: #28a745; font-size: 0.9em; margin-top: 5px; text-align: center; }
+        /* Paleta e estilos base do TEMA DE FUNCIONÁRIO (escuro) */
+        :root {
+            --primary-color: #FFD700; /* Amarelo Bueno Autos */
+            --dark-bg: #1a1a1a;
+            --card-bg: #2c2c2c; /* Fundo dos cards/seções principais */
+            --text-light: #f8f9fa;
+            --text-muted: #adb5bd;
+            --border-color: #495057; /* Bordas mais escuras */
+            --border-color-light: #3a3a3a; /* Bordas mais claras dentro do card */
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #333333 100%);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column; /* Para alinhar header e main */
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px 0; /* Padding vertical, sem padding horizontal para o header ocupar tudo */
+        }
+
+        .page-header { /* Cabeçalho simples para esta página */
+            width: 100%;
+            padding: 15px 5%;
+            background-color: var(--dark-bg); /* Ou uma cor um pouco diferente, ex: #1f1f1f */
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centraliza o logo se for o único elemento */
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .page-header .logo-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .page-header .logo-link img {
+            height: 40px;
+        }
+        .page-header .logo-link span {
+            color: var(--text-light);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .confirmation-container { /* Substitui o .container original */
+            background-color: var(--card-bg);
+            padding: 2rem 2.5rem; /* Padding Bootstrap xl */
+            border-radius: 12px; /* Um pouco mais arredondado */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 700px; /* Aumentado um pouco para melhor visualização dos detalhes */
+            text-align: left; /* Alinhamento padrão à esquerda */
+        }
+
+        .confirmation-container h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem; /* mb-4 Bootstrap */
+            font-weight: 700;
+        }
+        .confirmation-container > p { /* Parágrafo introdutório */
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+        }
+
+        .detail-section {
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color-light);
+            padding-bottom: 1.5rem;
+        }
+        .detail-section:last-of-type { /* Usar last-of-type é mais robusto */
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .detail-section h3 { /* Título das seções de detalhe */
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.25rem; /* Equivalente a h5 Bootstrap */
+            font-weight: 600;
+        }
+        .detail-item {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+        .detail-item strong {
+            /* width: 120px; display: inline-block; */ /* Bootstrap grid pode cuidar disso se necessário */
+            color: var(--text-muted); /* Um cinza mais claro para o label */
+            margin-right: 0.5rem;
+        }
+        .service-list {
+            list-style: disc;
+            padding-left: 1.5rem; /* Recuo padrão para listas */
+            margin: 0;
+            color: var(--text-light);
+        }
+        .service-list li {
+            margin-bottom: 0.3rem;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between; /* Mantido para os dois botões */
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color-light);
+        }
+        /* Estilo para os botões usando classes Bootstrap e customização se necessário */
+        .btn-custom-confirm {
+            background-color: var(--primary-color);
+            color: var(--dark-bg); /* Texto escuro para botão amarelo */
+            border-color: var(--primary-color);
+            font-weight: 600;
+        }
+        .btn-custom-confirm:hover {
+            background-color: #ffe45c; /* Amarelo mais claro */
+            border-color: #ffe45c;
+            color: var(--dark-bg);
+        }
+        .btn-custom-back { /* Botão Voltar pode ser um outline do tema */
+            color: var(--text-light);
+            border-color: var(--border-color);
+            font-weight: 500;
+        }
+        .btn-custom-back:hover {
+            background-color: var(--border-color);
+            color: var(--text-light);
+        }
+
+        /* Alertas com tema escuro */
+        .alert { /* Base para alertas, Bootstrap já tem, mas podemos garantir cores */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .alert-danger { /* Sobrescrevendo Bootstrap para tema escuro se necessário */
+            background-color: rgba(220, 53, 69, 0.15); /* Vermelho com opacidade */
+            color: #f8d7da; /* Texto claro para erro */
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.15); /* Verde com opacidade */
+            color: #d4edda; /* Texto claro para sucesso */
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Confirmar Solicitação de Agendamento</h1>
 
-        <p th:if="${mensagemErro}" class="error-message" th:text="${mensagemErro}"></p>
-        <p th:if="${mensagemSucesso}" class="success-message" th:text="${mensagemSucesso}"></p>
+    <div class="confirmation-container">
+        <h1>Confirmar Solicitação</h1> <div th:if="${mensagemErro}" class="alert alert-danger" role="alert">
+             <i class="ri-error-warning-line me-1"></i> <span th:text="${mensagemErro}"></span>
+        </div>
+        <div th:if="${mensagemSucesso}" class="alert alert-success" role="alert">
+             <i class="ri-check-double-line me-1"></i> <span th:text="${mensagemSucesso}"></span>
+        </div>
 
         <p>Por favor, revise os dados da sua solicitação antes de confirmar:</p>
 
         <div class="detail-section">
             <h3>Dados do Cliente</h3>
-            <div class="detail-item"><strong>Nome:</strong> <span th:text="${solicitacaoConfirmacao.clienteNome}"></span></div>
-            <div class="detail-item"><strong>CPF:</strong> <span th:text="${solicitacaoConfirmacao.clienteCpf}"></span></div>
-            <div class="detail-item"><strong>Email:</strong> <span th:text="${solicitacaoConfirmacao.clienteEmail}"></span></div>
-            <div class="detail-item"><strong>Telefone:</strong> <span th:text="${solicitacaoConfirmacao.clienteTelefone}"></span></div>
+            <div class="row"> <div class="col-md-6 detail-item"><strong>Nome:</strong> <span th:text="${solicitacaoConfirmacao.clienteNome}"></span></div>
+                <div class="col-md-6 detail-item"><strong>CPF:</strong> <span th:text="${solicitacaoConfirmacao.clienteCpf}"></span></div>
+                <div class="col-md-6 detail-item"><strong>Email:</strong> <span th:text="${solicitacaoConfirmacao.clienteEmail}"></span></div>
+                <div class="col-md-6 detail-item"><strong>Telefone:</strong> <span th:text="${solicitacaoConfirmacao.clienteTelefone}"></span></div>
+            </div>
         </div>
 
         <div class="detail-section">
             <h3>Dados do Veículo</h3>
-            <div class="detail-item"><strong>Marca:</strong> <span th:text="${solicitacaoConfirmacao.veiculoMarca}"></span></div>
-            <div class="detail-item"><strong>Modelo:</strong> <span th:text="${solicitacaoConfirmacao.veiculoModelo}"></span></div>
-            <div class="detail-item"><strong>Ano:</strong> <span th:text="${solicitacaoConfirmacao.veiculoAno}"></span></div>
-            <div class="detail-item"><strong>Placa:</strong> <span th:text="${solicitacaoConfirmacao.veiculoPlaca}"></span></div>
+             <div class="row">
+                <div class="col-md-6 detail-item"><strong>Marca:</strong> <span th:text="${solicitacaoConfirmacao.veiculoMarca}"></span></div>
+                <div class="col-md-6 detail-item"><strong>Modelo:</strong> <span th:text="${solicitacaoConfirmacao.veiculoModelo}"></span></div>
+                <div class="col-md-6 detail-item"><strong>Ano:</strong> <span th:text="${solicitacaoConfirmacao.veiculoAno}"></span></div>
+                <div class="col-md-6 detail-item"><strong>Placa:</strong> <span th:text="${solicitacaoConfirmacao.veiculoPlaca}"></span></div>
+            </div>
         </div>
 
         <div class="detail-section">
@@ -55,20 +210,25 @@
             <ul class="service-list">
                 <li th:each="servico : ${servicosConfirmacao}" th:text="${servico.nome}"></li>
             </ul>
+            <p th:if="${#lists.isEmpty(servicosConfirmacao)}" class="text-muted">Nenhum serviço selecionado.</p>
         </div>
 
         <div class="detail-section">
             <h3>Informações do Agendamento</h3>
-            <div class="detail-item"><strong>Data:</strong> <span th:text="${#temporals.format(solicitacaoConfirmacao.dataAgendadaDia, 'dd/MM/yyyy')}"></span></div>
-            <div class="detail-item"><strong>Horário:</strong> <span th:text="${#temporals.format(solicitacaoConfirmacao.horarioAgendado, 'HH:mm')}"></span></div>
+            <div class="row">
+                <div class="col-md-6 detail-item"><strong>Data:</strong> <span th:text="${#temporals.format(solicitacaoConfirmacao.dataAgendadaDia, 'dd/MM/yyyy')}"></span></div>
+                <div class="col-md-6 detail-item"><strong>Horário:</strong> <span th:text="${#temporals.format(solicitacaoConfirmacao.horarioAgendado, 'HH:mm')}"></span></div>
+            </div>
         </div>
 
         <div class="button-group">
-            <form th:action="@{/solicitacoes/nova}" method="get">
-                 <button type="submit" class="back-button">Voltar e Editar</button>
+            <form th:action="@{/solicitacoes/nova}" method="get" class="w-100">
+                 <button type="submit" class="btn btn-custom-back w-100">
+                    <i class="ri-arrow-left-line me-1"></i>Voltar e Editar
+                </button>
             </form>
 
-            <form th:action="@{/solicitacoes/confirmar}" th:object="${solicitacaoConfirmacao}" method="post">
+            <form th:action="@{/solicitacoes/confirmar}" th:object="${solicitacaoConfirmacao}" method="post" class="w-100">
                 <input type="hidden" th:field="*{clienteNome}" />
                 <input type="hidden" th:field="*{clienteCpf}" />
                 <input type="hidden" th:field="*{clienteEmail}" />
@@ -81,12 +241,15 @@
                 <input type="hidden" th:field="*{horarioAgendado}" />
                 
                 <div th:each="servicoId : ${solicitacaoConfirmacao.servicoIds}">
-                      <input type="hidden" name="servicoIds" th:value="${servicoId}" />
+                    <input type="hidden" name="servicoIds" th:value="${servicoId}" />
                 </div>
 
-                <button type="submit" class="confirm-button">Confirmar e Enviar Solicitação</button>
+                <button type="submit" class="btn btn-custom-confirm w-100">
+                     <i class="ri-check-line me-1"></i>Confirmar e Enviar
+                </button>
             </form>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

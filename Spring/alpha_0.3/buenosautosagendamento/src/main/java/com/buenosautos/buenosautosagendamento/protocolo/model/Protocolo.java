@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList; // Importe para inicializar a lista
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,6 +32,7 @@ public class Protocolo {
     private SolicitacaoLocal solicitacao;
 
     @OneToMany(mappedBy = "protocolo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ProtocoloServicoItem> servicosProtocolo;
 
     @Enumerated(EnumType.STRING)

@@ -1,0 +1,342 @@
+/* --- GERAL E VARIÁVEIS --- */
+:root {
+    --primary-color: #FFD700; /* Amarelo/Dourado */
+    --dark-bg: #121212;
+    --card-bg: #1e1e1e;
+    --sidebar-bg: #181818;
+    --text-light: #f5f5f5;
+    --text-muted: #a0a0a0;
+    --border-color: #333333;
+    --status-pending: #f0ad4e;
+    --status-approved: #5cb85c;
+    --status-completed: #5bc0de;
+    --font-family: 'Poppins', sans-serif;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: var(--font-family);
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+}
+/* --- CONTROLE DAS TELAS (VIEWS) --- */
+.view {
+    display: none;
+}
+.view.active {
+    display: block;
+}
+/* --- ESTILO PARA TELAS DE AUTENTICAÇÃO --- */
+.auth-view.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+.auth-container {
+    background-color: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+.auth-logo {
+    width: 80px;
+    margin-bottom: 1rem;
+}
+.auth-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-light);
+}
+.auth-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+}
+.input-group {
+    text-align: left;
+    margin-bottom: 1.25rem;
+}
+.input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+.input-group input, .modal-body textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background-color: var(--dark-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+.input-group input:focus, .modal-body textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+.btn-primary {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--primary-color);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-primary:hover {
+    background-color: #ffe45c;
+}
+.forgot-password-link, .back-link {
+    display: block;
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+    text-align: right;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+.back-link {
+    text-align: center;
+    margin-top: 1rem;
+}
+/* --- ESTILO DO DASHBOARD --- */
+.dashboard-layout.active {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+}
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.sidebar-logo { width: 40px; }
+.sidebar-header span { font-weight: 700; font-size: 1.2rem; }
+.sidebar-nav {
+    flex-grow: 1;
+}
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s, background-color 0.3s;
+}
+.nav-link i { font-size: 1.2rem; }
+.nav-link:hover {
+    background-color: var(--card-bg);
+    color: var(--text-light);
+}
+.nav-link.active {
+    background-color: var(--primary-color);
+    color: #000;
+    font-weight: 600;
+}
+.sidebar-footer .logout { color: #f44336; }
+.sidebar-footer .logout:hover { background-color: rgba(244, 67, 54, 0.1); }
+.main-content {
+    flex-grow: 1;
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+}
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+.main-header h1 { font-size: 1.8rem; font-weight: 700; }
+.user-profile { display: flex; align-items: center; gap: 10px; }
+.user-profile i { font-size: 1.5rem; }
+.table-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.requests-table th, .requests-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+.requests-table thead {
+    background-color: #252525;
+}
+.requests-table th {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+.requests-table tbody tr:last-child td { border-bottom: none; }
+.requests-table tbody tr:hover { background-color: #2a2a2a; }
+.status {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+.status-pending { background-color: rgba(240, 173, 78, 0.2); color: var(--status-pending); }
+.status-approved { background-color: rgba(92, 184, 92, 0.2); color: var(--status-approved); }
+.status-completed { background-color: rgba(91, 192, 222, 0.2); color: var(--status-completed); }
+.btn-action {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+}
+.btn-action:hover { color: var(--primary-color); }
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    gap: 8px;
+}
+.page-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    transition: all 0.3s;
+}
+.page-link:hover {
+    background-color: var(--card-bg);
+    color: var(--text-light);
+}
+.page-link.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #000;
+    font-weight: 600;
+}
+/* --- ESTILOS PARA AS NOVAS GUIAS DO DASHBOARD --- */
+.content-pane {
+    display: none;
+}
+.content-pane.active {
+    display: block;
+}
+.availability-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+.calendar-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.calendar-header h3 { margin: 0; font-size: 1.2rem; }
+.btn-icon { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+.btn-icon:hover { color: var(--primary-color); }
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+.calendar-day, .day-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 45px;
+    border-radius: 50%;
+}
+.day-name { font-weight: 600; color: var(--text-muted); }
+.calendar-day { cursor: pointer; transition: background-color 0.3s; border: 2px solid transparent; }
+.calendar-day.other-month { color: #555; }
+.calendar-day:hover { background-color: #2a2a2a; }
+.calendar-day.selected { background-color: var(--primary-color); color: #000; font-weight: 600; }
+.calendar-day.available { border: 2px solid var(--status-approved); }
+.time-slots-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    align-self: flex-start;
+}
+.time-slots-container h4 { margin-bottom: 1.5rem; }
+.time-slot { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color); }
+.time-slot:last-child { border-bottom: none; }
+.toggle-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary-color); }
+input:checked + .slider:before { transform: translateX(24px); }
+.text-danger { color: #f44336 !important; }
+.btn-action.text-danger:hover { color: #ff7961 !important; }
+.filter-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.filter-bar .form-control, .filter-bar .form-select {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    border-color: var(--border-color);
+}
+.filter-bar .form-control:focus, .filter-bar .form-select:focus {
+    background-color: var(--dark-bg);
+    color: var(--text-light);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+/* Estilo do Modal (Janela Pop-up) */
+.modal-content {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-light);
+}
+.modal-header { border-bottom: 1px solid var(--border-color); }
+.modal-footer { border-top: 1px solid var(--border-color); }
+.modal-title { color: var(--primary-color); font-weight: 600; }
+.btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+.modal-footer .btn-secondary {
+    background-color: #333;
+    border-color: #333;
+    color: var(--text-light);
+}

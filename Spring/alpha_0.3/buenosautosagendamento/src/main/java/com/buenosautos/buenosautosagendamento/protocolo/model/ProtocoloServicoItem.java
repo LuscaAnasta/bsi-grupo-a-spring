@@ -10,6 +10,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal; // Import para BigDecimal
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "protocolo_servico_item")
 public class ProtocoloServicoItem {
@@ -19,7 +21,8 @@ public class ProtocoloServicoItem {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "protocolo_id", nullable = false)
+    @JoinColumn(name = "protocolo_id")
+    @JsonBackReference
     private Protocolo protocolo;
 
     // Campos para o snapshot do serviço

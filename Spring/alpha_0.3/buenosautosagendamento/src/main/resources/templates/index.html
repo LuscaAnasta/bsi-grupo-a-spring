@@ -1,82 +1,136 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buenos Autos - Início</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column; /* Organiza os itens em coluna */
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            text-align: center;
-        }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Bueno Autos - Agendamento de serviços automotivos e consulta de protocolos.">
+    <meta name="Authors" content="André Arruda Seter, Arthur Batisti, Jefferson Tavares, Lucas Anastacio e Pedro Paulo">
 
-        .container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-        }
+    <link rel="shortcut icon" th:href="@{/images/Logo1.png}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/homeCustomer.css}">
+    <link rel="stylesheet" th:href="@{/css/navBar.css}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .button-group {
-            display: flex;
-            flex-direction: column; /* Botões um abaixo do outro */
-            gap: 15px; /* Espaçamento entre os botões */
-            margin-top: 20px;
-        }
-
-        .button-group a {
-            display: inline-block; /* Permite padding e margem */
-            background-color: #007bff;
-            color: white;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 18px;
-            text-decoration: none; /* Remove sublinhado do link */
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .button-group a:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
-        }
-
-        /* Estilo para um botão secundário (opcional) */
-        .button-group a.secondary {
-            background-color: #6c757d; /* Cinza */
-        }
-
-        .button-group a.secondary:hover {
-            background-color: #545b62;
-        }
-    </style>
+    <title>Bueno Autos - Home</title>
 </head>
-<body>
-    <div class="container">
-        <h1>Bem-vindo à Buenos Autos!</h1>
-        <p>Por favor, escolha uma opção para continuar:</p>
 
-        <div class="button-group">
-            <a th:href="@{/login}">Entrar no Sistema (Login)</a>
-            <a th:href="@{/solicitacoes/nova}" class="secondary">Fazer Nova Solicitação</a>
-            <a th:href="@{/protocolos/consultar}" class="secondary">Consultar Protocolo</a>
-        </div>
-    </div>
+<body>
+    <header class="main-header">
+        <a th:href="@{/}" class="logo">
+            <img th:src="@{/images/Logo1.png}" alt="Logo Bueno Autos">
+            <span>Bueno Autos</span>
+        </a>
+        <nav>
+            <ul class="navbar">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#contato">Contato</a></li>
+                <li><a href="#localizacao">Localização</a></li>
+                <li><a href="#servicos">Serviços</a></li>
+                <li><a th:href="@{/protocolos/consultar}">Protocolos</a></li>
+                <li><a th:href="@{/login}" class="login-icon" title="Login de Funcionário"><i
+                            class="ri-login-box-line"></i></a></li>
+            </ul>
+        </nav>
+        <div class="bx-menu" id="menu-icon"><i class="ri-menu-line"></i></div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">BEM-VINDO AO BUENO AUTOS</h1>
+                <p class="hero-subtitle">Consulte aqui os nossos serviços</p>
+                <div class="hero-buttons">
+                    <a th:href="@{/solicitacoes/nova}" class="btn btn-primary">Agendar um Serviço</a>
+                    <a th:href="@{/protocolos/consultar}" class="btn btn-secondary">Já tenho um Protocolo</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contato" class="content-section">
+            <div class="section-container">
+                <h2 class="section-title">Nossos Contatos</h2>
+                <p class="section-description">Agradecemos o seu interesse e aguardamos a sua mensagem.</p>
+                <div class="contact-grid">
+                    <div class="contact-card"><i class="ri-whatsapp-fill"></i>
+                        <h3>WhatsApp</h3>
+                        <p>(11) 99982-5825</p>
+                    </div>
+                    <div class="contact-card"><i class="ri-phone-fill"></i>
+                        <h3>Telefone</h3>
+                        <p>(11) 3246-8852</p>
+                    </div>
+                    <div class="contact-card"><i class="ri-mail-send-fill"></i>
+                        <h3>Email</h3>
+                        <p>contato@buenoautos.com</p>
+                    </div>
+                    <div class="contact-card"><i class="ri-instagram-fill"></i>
+                        <h3>Instagram</h3>
+                        <p>@bueno_autos._</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="localizacao" class="content-section bg-light">
+            <div class="section-container">
+                <h2 class="section-title">Nossa Localização</h2>
+                <p class="section-description">Estamos localizados no coração do Grajaú - SP.</p>
+                <div class="location-content">
+                    <div class="map-container">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3652.887015525983!2d-46.69080932386915!3d-23.71616787869387!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ce4f32e6503f83%3A0x673c87968a3e8785!2sR.%20Jo%C3%A3o%20da%20Costa%20Moreira%2C%2011%20-%20Parque%20Residencial%20Cocaia%2C%20S%C3%A3o%20Paulo%20-%20SP%2C%2004851-205!5e0!3m2!1spt-BR!2sbr!4v1716858607316!5m2!1spt-BR!2sbr"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="address-container">
+                        <h3>Endereço</h3>
+                        <p>Rua João da Costa Moreira, 11<br>Grajaú, São Paulo - SP<br>CEP: 04851-205</p>
+                        <h3>Horário de Funcionamento</h3>
+                        <p><strong>Segunda a Sexta:</strong> 8:00 - 18:00<br><strong>Sábado:</strong> 8:00 -
+                            12:00<br><em>Atendimento somente com agendamento.</em></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="servicos" class="content-section">
+            <div class="section-container">
+                <h2 class="section-title">Nossos Serviços</h2>
+                <p class="section-description">Oferecemos soluções completas para o seu veículo.</p>
+                <div class="services-grid">
+                    <div class="service-card"><i class="ri-oil-fill"></i>
+                        <h3>Troca de Óleo e Filtros</h3>
+                        <p>Serviço completo de troca de óleo e filtros para manter seu motor saudável.</p>
+                    </div>
+                    <div class="service-card"><i class="ri-disc-line"></i>
+                        <h3>Sistema de Freios</h3>
+                        <p>Revisão e reparo de pastilhas, discos e todo o sistema de freios.</p>
+                    </div>
+                    <div class="service-card"><i class="ri-road-map-line"></i>
+                        <h3>Alinhamento e Balanceamento</h3>
+                        <p>Garanta a estabilidade e o bom desempenho do seu carro nas ruas.</p>
+                    </div>
+                    <div class="service-card"><i class="ri-cpu-line"></i>
+                        <h3>Diagnóstico Eletrônico</h3>
+                        <p>Identificação precisa de falhas com equipamentos de última geração.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <p>© 2025 Bueno Autos. Todos os direitos reservados.</p>
+        <p>Desenvolvido por André, Arthur, Jefferson, Lucas & Pedro Paulo</p>
+    </footer>
+
+    <script type="text/javascript" th:src="@{/JS/script.js}"></script>
 </body>
+
 </html>

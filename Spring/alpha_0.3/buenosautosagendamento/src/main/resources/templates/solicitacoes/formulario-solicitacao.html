@@ -1,163 +1,452 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Solicitação de Agendamento</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bueno Autos - Agendar Serviço</title>
+
+    <meta name="description" content="Formulário para agendamento de serviços na Bueno Autos.">
+    <meta name="Authors" content="André Arruda Seter, Arthur Batisti, Jefferson Tavares, Lucas Anastacio e Pedro Paulo">
+
+    <link rel="shortcut icon" th:href="@{/SRC/Logo1.png}" href="images/Logo1.png" type="image/x-icon">
+
+    <link rel="stylesheet" th:href="@{/CSS/customerOrder.css}" href="css/customerOrder.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@latest/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script>
+        (function() {
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'light') {
+                document.documentElement.classList.add('light-mode'); // Aplica ao <html>
+                document.addEventListener('DOMContentLoaded', () => document.body.classList.add('light-mode'));
+            }
+        })();
+    </script>
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); width: 100%; max-width: 800px; }
-        h1, h2 { color: #333; text-align: center; margin-bottom: 20px; }
-        .section-title { border-bottom: 2px solid #007bff; padding-bottom: 5px; margin-top: 30px; margin-bottom: 20px; color: #007bff; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        .form-group input[type="text"], .form-group input[type="email"], .form-group input[type="tel"], .form-group select, .form-group textarea { width: calc(100% - 22px); padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; box-sizing: border-box; }
-        button[type="submit"] { background-color: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; width: 100%; margin-top: 10px; }
-        button[type="submit"]:hover { background-color: #218838; }
-        .error-message { color: #dc3545; font-size: 0.9em; margin-top: 5px; }
-        .success-message { color: #28a745; font-size: 0.9em; margin-top: 5px; }
-        .service-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .service-table th, .service-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .service-table th { background-color: #f2f2f2; }
+        /* --- RESET BÁSICO E VARIÁVEIS GLOBAIS --- */
+        :root {
+            --primary-color: #FFD700; /* Amarelo/Dourado */
+            --dark-bg: #1a1a1a;
+            --card-bg: #2c2c2c;
+            --text-light: #f8f9fa;
+            --text-muted: #adb5bd;
+            --border-color: #495057;
+            --header-bg: #1f1f1f;
+            --header-border: #333;
+        }
+
+        /* Estilos para o Tema Claro */
+        body.light-mode {
+            --primary-color: #FFD700;
+            --dark-bg: #f4f4f8;
+            --card-bg: #ffffff;
+            --text-light: #212529;
+            --text-muted: #6c757d;
+            --border-color: #dee2e6;
+            --header-bg: #f8f9fa;
+            --header-border: #e0e0e0;
+        }
+        body.light-mode .form-control {
+            background-color: #fff;
+            color: #212529;
+            border-color: #ced4da;
+        }
+        body.light-mode .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25);
+        }
+        body.light-mode .table {
+            --bs-table-bg: #fff;
+            --bs-table-border-color: var(--border-color);
+            --bs-table-color: var(--text-light); /* Texto da tabela no modo claro */
+            --bs-table-hover-bg: #f1f3f5;
+        }
+         body.light-mode .table th { /* Cabeçalho da tabela no modo claro */
+            color: #495057;
+        }
+        body.light-mode .table td { /* Células da tabela no modo claro */
+            color: var(--text-light);
+        }
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            list-style: none;
+        }
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* --- ESTILOS DO CABEÇALHO (HEADER / NAVBAR) --- */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 5%;
+            background-color: var(--header-bg);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid var(--header-border);
+            height: 70px;
+            transition: background-color 0.3s, border-bottom-color 0.3s;
+        }
+        header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        header .logo img {
+            height: 40px;
+            width: auto;
+        }
+        header .logo span {
+            color: var(--text-light);
+        }
+        body.light-mode header .logo span {
+            color: var(--text-light);
+        }
+        header .navbar {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        header .navbar a {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 5px 0;
+            position: relative;
+            transition: color 0.3s ease-in-out;
+        }
+        header .navbar a:hover,
+        header .navbar a.active {
+            color: var(--primary-color);
+        }
+        header .navbar a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            display: block;
+            margin-top: 5px;
+            right: 0;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+        header .navbar a:hover::after {
+            width: 100%;
+            left: 0;
+            right: auto;
+        }
+        header .main {
+            display: flex;
+            align-items: center;
+        }
+        #menu-icon {
+            font-size: 35px;
+            color: var(--text-light);
+            cursor: pointer;
+            z-index: 1001;
+            display: none;
+        }
+
+        /* --- ESTILOS DO FORMULÁRIO MULTI-ETAPAS --- */
+        .form-wizard-container {
+            background-color: var(--card-bg);
+            padding: 2rem 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            margin: 3rem auto;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .progress-bar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        .progress-step { text-align: center; position: relative; color: var(--text-muted); transition: color 0.4s ease; }
+        .progress-step-icon { width: 35px; height: 35px; border-radius: 50%; background-color: transparent; border: 2px solid var(--text-muted); color: var(--text-muted); display: flex; justify-content: center; align-items: center; font-weight: bold; margin: 0 auto 0.5rem; transition: all 0.4s ease; }
+        .progress-step-label { font-size: 0.8rem; font-weight: 600; }
+        .progress-step-line { flex-grow: 1; height: 3px; background-color: var(--text-muted); margin: 0 -2px; transform: translateY(-1.1rem); transition: background-color 0.4s ease; }
+        .progress-step.active { color: var(--primary-color); }
+        .progress-step.active .progress-step-icon { background-color: var(--primary-color); border-color: var(--primary-color); color: var(--dark-bg); }
+        body.light-mode .progress-step.active .progress-step-icon { color: var(--text-light); }
+        .progress-step.active ~ .progress-step-line, .progress-step.active ~ .progress-step .progress-step-line { background-color: var(--primary-color); }
+        .progress-step.active ~ .progress-step { color: var(--text-light); }
+        .progress-step.active ~ .progress-step .progress-step-icon { border-color: var(--primary-color); color: var(--primary-color); }
+        .form-step-title { color: var(--primary-color); margin-bottom: 1.5rem; text-align: center; font-weight: 700; }
+        .form-label { font-weight: 600; color: var(--text-muted); }
+        .form-control { background-color: var(--dark-bg); color: var(--text-light); border: 1px solid var(--border-color); padding: 0.75rem 1rem; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        .form-control:focus { background-color: var(--dark-bg); color: var(--text-light); border-color: var(--primary-color); box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25); }
+        .form-control::placeholder { color: var(--text-muted); }
+        .btn-primary { background-color: var(--primary-color); border-color: var(--primary-color); color: #000; font-weight: bold; padding: 10px 30px; transition: all 0.3s ease; }
+        .btn-primary:hover { background-color: #ffe45c; border-color: #ffeb80; color: #000; transform: translateY(-2px); }
+        .btn-secondary { background-color: transparent; border-color: var(--border-color); color: var(--text-light); padding: 10px 30px; transition: all 0.3s ease; }
+        .btn-secondary:hover { background-color: var(--border-color); border-color: var(--border-color); color: var(--text-light); }
+        .table { --bs-table-bg: var(--card-bg); --bs-table-border-color: var(--border-color); --bs-table-hover-bg: #3c444c; vertical-align: middle; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        .table th { color: var(--primary-color); }
+        .table-hover tbody tr:hover { cursor: pointer; }
+        .form-check-input { background-color: var(--dark-bg); border-color: var(--border-color); }
+        .form-check-input:checked { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .form-check-input:focus { box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.25); }
+
+        /* --- BOTÃO DE TEMA --- */
+        #theme-toggle { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background-color: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; cursor: pointer; z-index: 2000; transition: all 0.3s ease; }
+        #theme-toggle:hover { color: var(--primary-color); border-color: var(--primary-color); transform: translateY(-5px); }
+        #theme-toggle .sun-icon { display: none; }
+        #theme-toggle .moon-icon { display: block; }
+        body.light-mode #theme-toggle .sun-icon { display: block; }
+        body.light-mode #theme-toggle .moon-icon { display: none; }
+
+        /* Mensagens de erro/sucesso do Thymeleaf */
+        .error-message-th { color: #dc3545; font-size: 0.9em; margin-top: 5px; }
+        .success-message-th { color: #28a745; font-size: 0.9em; margin-top: 5px; text-align: center; margin-bottom: 1rem;}
+        /* Para erros de validação de campo */
+        .field-error-message { color: #dc3545; font-size: 0.8em; margin-top: 0.25rem; display: block; }
+
+
+        /* --- RESPONSIVIDADE PARA O MENU MOBILE --- */
+        @media (max-width: 992px) {
+            #menu-icon { display: block; }
+            header .navbar {
+                position: absolute;
+                top: 70px;
+                right: -100%;
+                width: 270px;
+                height: calc(100vh - 70px);
+                background: var(--header-bg);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 30px;
+                transition: right .50s ease;
+                border-left: 1px solid var(--border-color);
+                box-shadow: -5px 5px 10px rgba(0,0,0,0.2);
+            }
+            header .navbar.open { right: 0; }
+            header .navbar a { display: block; margin: 12px 0; width: 100%; }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Nova Solicitação de Agendamento</h1>
 
-        <p th:if="${mensagemErro}" class="error-message" th:text="${mensagemErro}"></p>
-        <p th:if="${mensagemSucesso}" class="success-message" th:text="${mensagemSucesso}"></p>
-
-        <form action="#" th:action="@{/solicitacoes/nova}" th:object="${solicitacaoForm}" method="post">
-            <h2 class="section-title">Dados do Cliente</h2>
-            <div class="form-group">
-                <label for="clienteNome">Nome Completo:</label>
-                <input type="text" id="clienteNome" th:field="*{clienteNome}" required>
-                <p th:if="${#fields.hasErrors('clienteNome')}" th:errors="*{clienteNome}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="clienteCpf">CPF:</label>
-                <input type="text" id="clienteCpf" th:field="*{clienteCpf}" pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}" placeholder="Ex: 123.456.789-00" required>
-                <p th:if="${#fields.hasErrors('clienteCpf')}" th:errors="*{clienteCpf}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="clienteEmail">Email:</label>
-                <input type="email" id="clienteEmail" th:field="*{clienteEmail}" required>
-                <p th:if="${#fields.hasErrors('clienteEmail')}" th:errors="*{clienteEmail}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="clienteTelefone">Telefone:</label>
-                <input type="tel" id="clienteTelefone" th:field="*{clienteTelefone}" pattern="\(\d{2}\)\s?\d{4,5}-?\d{4}" placeholder="Ex: (XX) 9XXXX-XXXX" required>
-                <p th:if="${#fields.hasErrors('clienteTelefone')}" th:errors="*{clienteTelefone}" class="error-message"></p>
-            </div>
-
-            <h2 class="section-title">Dados do Veículo</h2>
-            <div class="form-group">
-                <label for="veiculoMarca">Marca:</label>
-                <input type="text" id="veiculoMarca" th:field="*{veiculoMarca}" required>
-                <p th:if="${#fields.hasErrors('veiculoMarca')}" th:errors="*{veiculoMarca}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="veiculoModelo">Modelo:</label>
-                <input type="text" id="veiculoModelo" th:field="*{veiculoModelo}" required>
-                <p th:if="${#fields.hasErrors('veiculoModelo')}" th:errors="*{veiculoModelo}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="veiculoAno">Ano:</label>
-                <input type="text" id="veiculoAno" th:field="*{veiculoAno}" pattern="\d{4}" placeholder="Ex: 2023" required>
-                <p th:if="${#fields.hasErrors('veiculoAno')}" th:errors="*{veiculoAno}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="veiculoPlaca">Placa:</label>
-                <input type="text" id="veiculoPlaca" th:field="*{veiculoPlaca}" required>
-                <p th:if="${#fields.hasErrors('veiculoPlaca')}" th:errors="*{veiculoPlaca}" class="error-message"></p>
-            </div>
-
-            <h2 class="section-title">Serviços Desejados</h2>
-            <div class="form-group">
-                <p>Selecione um ou mais serviços:</p>
-                
-                <p th:if="${erroServicos}" class="error-message" th:text="${erroServicos}"></p>
-                <p th:if="${#fields.hasErrors('servicoIds')}" th:errors="*{servicoIds}" class="error-message"></p>
-
-                <table class="service-table" th:if="${not #lists.isEmpty(servicosDisponiveis)}">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Nome do Serviço</th>
-                            <th>Código</th>
-                            <th>Preço</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="servico : ${servicosDisponiveis}">
-                            <td style="text-align: center;">
-                                <input type="checkbox" th:field="*{servicoIds}" th:value="${servico.id}">
-                            </td>
-                            <td th:text="${servico.nome}"></td>
-                            <td th:text="${servico.codigo}"></td>
-                            <td th:text="'R$ ' + ${#numbers.formatDecimal(servico.preco, 1, 2)}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p th:if="${#lists.isEmpty(servicosDisponiveis) and not erroServicos}">Nenhum serviço disponível.</p>
-            </div>
-
-            <h2 class="section-title">Informações do Agendamento</h2>
-            <div class="form-group">
-                <label for="dataAgendadaDia">Data do Agendamento:</label>
-                <select id="dataAgendadaDia" th:field="*{dataAgendadaDia}" required onchange="popularHorarios()">
-                    <option value="">-- Selecione um dia disponível --</option>
-                    <option th:each="diaDisponivel : ${diasComHorariosDisponiveis}" 
-                            th:value="${diaDisponivel.dia}" 
-                            th:text="${#temporals.format(diaDisponivel.dia, 'dd/MM/yyyy')}">
-                    </option>
-                </select>
-                <p th:if="${#fields.hasErrors('dataAgendadaDia')}" th:errors="*{dataAgendadaDia}" class="error-message"></p>
-            </div>
-            <div class="form-group">
-                <label for="horarioAgendado">Horário do Agendamento:</label>
-                <select id="horarioAgendado" th:field="*{horarioAgendado}" required>
-                    <option value="">-- Selecione um horário --</option>
-                    </select>
-                <p th:if="${#fields.hasErrors('horarioAgendado')}" th:errors="*{horarioAgendado}" class="error-message"></p>
-            </div>
-
-            <button type="submit">Prosseguir para Confirmação</button>
-        </form>
+    <div id="theme-toggle" title="Alterar tema">
+        <i class="ri-sun-line sun-icon"></i>
+        <i class="ri-moon-line moon-icon"></i>
     </div>
+
+    <header>
+        <a th:href="@{/}" href="index.html" class="logo">
+            <img th:src="@{/images/Logo1.png}" alt="Logo Bueno Autos">
+            <span id="txtBuenoAutos">Bueno Autos</span>
+        </a>
+        <nav class="navbar">
+             </nav>
+        <div class="main">
+            <div class="bx bx-menu" id="menu-icon"></div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="form-wizard-container">
+            <p th:if="${mensagemErro}" class="alert alert-danger error-message-th" th:text="${mensagemErro}"></p>
+            <p th:if="${mensagemSucesso}" class="alert alert-success success-message-th" th:text="${mensagemSucesso}"></p>
+
+            <div class="progress-bar-container">
+                <div class="progress-step active" data-step="1"><div class="progress-step-icon">1</div><div class="progress-step-label">Veículo</div></div>
+                <div class="progress-step-line"></div>
+                <div class="progress-step" data-step="2"><div class="progress-step-icon">2</div><div class="progress-step-label">Cliente</div></div>
+                <div class="progress-step-line"></div>
+                <div class="progress-step" data-step="3"><div class="progress-step-icon">3</div><div class="progress-step-label">Serviços</div></div>
+                <div class="progress-step-line"></div>
+                <div class="progress-step" data-step="4"><div class="progress-step-icon">4</div><div class="progress-step-label">Agendar</div></div>
+            </div>
+
+            <form id="form-solicitacao" th:action="@{/solicitacoes/nova}" th:object="${solicitacaoForm}" method="post" class="mt-4">
+                <fieldset id="section-veiculo">
+                    <h3 class="form-step-title">Informações do Veículo</h3>
+                    <div class="mb-3">
+                        <label for="veiculoMarca" class="form-label">Marca:</label>
+                        <input type="text" class="form-control" id="veiculoMarca" th:field="*{veiculoMarca}" required>
+                        <small th:if="${#fields.hasErrors('veiculoMarca')}" th:errors="*{veiculoMarca}" class="field-error-message"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="veiculoModelo" class="form-label">Modelo:</label>
+                        <input type="text" class="form-control" id="veiculoModelo" th:field="*{veiculoModelo}" required>
+                        <small th:if="${#fields.hasErrors('veiculoModelo')}" th:errors="*{veiculoModelo}" class="field-error-message"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="veiculoAno" class="form-label">Ano:</label>
+                        <input type="number" class="form-control" id="veiculoAno" th:field="*{veiculoAno}" min="1950" th:max="${#dates.year(#dates.createNow()) + 1}" placeholder="Ex: 2023" required>
+                        <small th:if="${#fields.hasErrors('veiculoAno')}" th:errors="*{veiculoAno}" class="field-error-message"></small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="veiculoPlaca" class="form-label">Placa:</label>
+                        <input type="text" class="form-control" id="veiculoPlaca" th:field="*{veiculoPlaca}" required>
+                        <small th:if="${#fields.hasErrors('veiculoPlaca')}" th:errors="*{veiculoPlaca}" class="field-error-message"></small>
+                    </div>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button class="btn btn-primary" type="button" onclick="validateAndNext('section-veiculo', 'section-cliente', 2)">Próximo</button>
+                    </div>
+                </fieldset>
+
+                <fieldset id="section-cliente" style="display: none;">
+                    <h3 class="form-step-title">Seus Dados de Contato</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="clienteNome" class="form-label">Nome Completo:</label>
+                            <input type="text" class="form-control" id="clienteNome" th:field="*{clienteNome}" required>
+                            <small th:if="${#fields.hasErrors('clienteNome')}" th:errors="*{clienteNome}" class="field-error-message"></small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="clienteCpf" class="form-label">CPF:</label>
+                            <input type="text" class="form-control" id="clienteCpf" th:field="*{clienteCpf}" pattern="\d{3}\.?\d{3}\.?\d{3}-?\d{2}" placeholder="Ex: 123.456.789-00" required>
+                            <small th:if="${#fields.hasErrors('clienteCpf')}" th:errors="*{clienteCpf}" class="field-error-message"></small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="clienteEmail" class="form-label">Email:</label>
+                            <input type="email" class="form-control" id="clienteEmail" th:field="*{clienteEmail}" required>
+                            <small th:if="${#fields.hasErrors('clienteEmail')}" th:errors="*{clienteEmail}" class="field-error-message"></small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="clienteTelefone" class="form-label">Telefone:</label>
+                            <input type="tel" class="form-control" id="clienteTelefone" th:field="*{clienteTelefone}" pattern="\(\d{2}\)\s?\d{4,5}-?\d{4}" placeholder="Ex: (XX) 9XXXX-XXXX" required>
+                            <small th:if="${#fields.hasErrors('clienteTelefone')}" th:errors="*{clienteTelefone}" class="field-error-message"></small>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-secondary" type="button" onclick="showSection('section-veiculo', 1)">Voltar</button>
+                        <button class="btn btn-primary" type="button" onclick="validateAndNext('section-cliente', 'section-servico', 3)">Próximo</button>
+                    </div>
+                </fieldset>
+
+                <fieldset id="section-servico" style="display: none;">
+                    <h3 class="form-step-title">Selecione os Serviços Desejados</h3>
+                    <div id="service-error-message" class="alert alert-danger" style="display: none;">Selecione pelo menos um serviço.</div>
+                     <small th:if="${erroServicos}" class="field-error-message d-block mb-2" th:text="${erroServicos}"></small>
+                     <small th:if="${#fields.hasErrors('servicoIds')}" th:errors="*{servicoIds}" class="field-error-message d-block mb-2"></small>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover"> <thead>
+                                <tr>
+                                    <th style="width: 10%;"></th>
+                                    <th>Serviço</th>
+                                    <th>Código</th>
+                                    <th>Valor (R$)</th>
+                                </tr>
+                            </thead>
+                            <tbody th:if="${not #lists.isEmpty(servicosDisponiveis)}">
+                                <tr th:each="servico : ${servicosDisponiveis}" onclick="toggleCheckbox(this)">
+                                    <td style="text-align: center;">
+                                        <input class="form-check-input" type="checkbox" th:field="*{servicoIds}" th:value="${servico.id}">
+                                    </td>
+                                    <td th:text="${servico.nome}">Nome do Serviço</td>
+                                    <td th:text="${servico.codigo}">COD001</td>
+                                    <td th:text="${#numbers.formatDecimal(servico.preco, 1, 'POINT', 2, 'COMMA')}">150,00</td>
+                                </tr>
+                            </tbody>
+                            <tbody th:if="${#lists.isEmpty(servicosDisponiveis)}">
+                                <tr>
+                                    <td colspan="4" class="text-center">Nenhum serviço disponível no momento.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-secondary" type="button" onclick="showSection('section-cliente', 2)">Voltar</button>
+                        <button class="btn btn-primary" type="button" onclick="validateServicoAndNext()">Próximo</button>
+                    </div>
+                </fieldset>
+
+                <fieldset id="section-agendamento" style="display: none;">
+                    <h3 class="form-step-title">Escolha o Melhor Dia e Horário</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dataAgendadaDia" class="form-label">Dia:</label>
+                            <select class="form-control" id="dataAgendadaDia" th:field="*{dataAgendadaDia}" required onchange="popularHorarios()">
+                                <option value="">-- Selecione um dia disponível --</option>
+                                <option th:each="diaDisponivel : ${diasComHorariosDisponiveis}"
+                                        th:value="${diaDisponivel.dia}"
+                                        th:text="${#temporals.format(diaDisponivel.dia, 'dd/MM/yyyy')}">
+                                </option>
+                            </select>
+                            <small th:if="${#fields.hasErrors('dataAgendadaDia')}" th:errors="*{dataAgendadaDia}" class="field-error-message"></small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="horarioAgendado" class="form-label">Horário:</label>
+                            <select class="form-control" id="horarioAgendado" th:field="*{horarioAgendado}" required>
+                                <option value="">-- Selecione um horário --</option>
+                            </select>
+                            <small th:if="${#fields.hasErrors('horarioAgendado')}" th:errors="*{horarioAgendado}" class="field-error-message"></small>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-secondary" type="button" onclick="showSection('section-servico', 3)">Voltar</button>
+                        <button class="btn btn-primary" type="submit">Finalizar Agendamento</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script th:src="@{/js/script.js}" src="../js/script.js"></script>
 
     <script th:inline="javascript">
         /*<![CDATA[*/
         // Dados de disponibilidade passados do controlador para o JavaScript
-        var diasComHorarios = [[${diasComHorariosDisponiveis}]];
+        var diasComHorarios = /*[[${diasComHorariosDisponiveis}]]*/ []; // Fallback para array vazio
 
         function popularHorarios() {
             var dataSelect = document.getElementById('dataAgendadaDia');
             var horarioSelect = document.getElementById('horarioAgendado');
             var selectedDate = dataSelect.value; // Formato YYYY-MM-DD
 
-            // Limpa as opções atuais do select de horários
             horarioSelect.innerHTML = '<option value="">-- Selecione um horário --</option>';
-            horarioSelect.disabled = true; // Desabilita até ter horários
+            horarioSelect.disabled = true;
 
-            if (selectedDate) {
-                // Encontra o objeto de dia correspondente na lista de diasComHorarios
+            if (selectedDate && diasComHorarios) { // Verifica se diasComHorarios existe
                 var diaEncontrado = diasComHorarios.find(function(diaDto) {
                     return diaDto.dia === selectedDate;
                 });
 
-                if (diaEncontrado && diaEncontrado.horariosDisponiveis.length > 0) {
-                    // Preenche o select de horários com as opções disponíveis para o dia
+                if (diaEncontrado && diaEncontrado.horariosDisponiveis && diaEncontrado.horariosDisponiveis.length > 0) {
                     diaEncontrado.horariosDisponiveis.forEach(function(horario) {
                         var option = document.createElement('option');
                         option.value = horario; // Valor HH:MM
                         option.textContent = horario; // Texto visível HH:MM
                         horarioSelect.appendChild(option);
                     });
-                    horarioSelect.disabled = false; // Habilita o select
+                    horarioSelect.disabled = false;
                 } else {
-                    // Mensagem se não houver horários para o dia selecionado (improvável com a lógica do service)
                     var option = document.createElement('option');
                     option.value = "";
                     option.textContent = "-- Nenhum horário disponível para este dia --";
@@ -166,28 +455,147 @@
             }
              // Tenta selecionar o primeiro horário disponível, se houver
             if (horarioSelect.options.length > 1) {
-                horarioSelect.selectedIndex = 1; 
+                // Não pré-seleciona, deixa o usuário escolher ou o backend repopular
+                // horarioSelect.selectedIndex = 1;
             }
         }
 
-        // Chama popularHorarios() quando a página carrega para preencher o campo se já houver um dia selecionado
-        // (ex: em caso de erro de validação do formulário, onde os dados são repopulados)
-        document.addEventListener('DOMContentLoaded', function() {
-            popularHorarios();
-            // Adicionalmente, se o formulário foi repopulado por um erro, 
-            // e já tem uma data e horário selecionados, tente re-selecionar
-            var dataAgendadaDiaValue = [[${solicitacaoForm.dataAgendadaDia}]] ? [[${#temporals.format(solicitacaoForm.dataAgendadaDia, 'yyyy-MM-dd')}]] : null;
-            var horarioAgendadoValue = [[${solicitacaoForm.horarioAgendado}]] ? [[${#temporals.format(solicitacaoForm.horarioAgendado, 'HH:mm')}]] : null;
+        // Lógica do tema (já estava no seu HTML, mantida)
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const body = document.body;
+
+            if (localStorage.getItem('theme') === 'light') {
+                body.classList.add('light-mode');
+                // O script no <head> já aplica ao <html>, aqui garante para body
+                // se o DOMContentLoaded do head ainda não disparou o listener para o body.
+                if (!document.documentElement.classList.contains('light-mode')) {
+                     document.documentElement.classList.add('light-mode');
+                }
+            }
+
+            const toggleTheme = () => {
+                body.classList.toggle('light-mode');
+                document.documentElement.classList.toggle('light-mode'); // Também no HTML tag
+                if (body.classList.contains('light-mode')) {
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    localStorage.setItem('theme', 'dark');
+                }
+            };
+
+            if (themeToggleBtn) {
+                themeToggleBtn.addEventListener('click', toggleTheme);
+            }
+
+            // Lógica do Menu Mobile (já estava no seu HTML, mantida)
+            const menuIcon = document.querySelector('#menu-icon');
+            const navbar = document.querySelector('.navbar');
+
+            if (menuIcon && navbar) {
+                menuIcon.onclick = () => {
+                    menuIcon.classList.toggle('bx-x');
+                    navbar.classList.toggle('open');
+                };
+            }
+
+            // Chama popularHorarios() para preencher e tentar re-selecionar se houver valores do backend
+            // (ex: em caso de erro de validação do formulário)
+            var dataAgendadaDiaValue = /*[[${solicitacaoForm != null && solicitacaoForm.dataAgendadaDia != null ? #temporals.format(solicitacaoForm.dataAgendadaDia, 'yyyy-MM-dd') : null}]]*/ null;
+            var horarioAgendadoValue = /*[[${solicitacaoForm != null && solicitacaoForm.horarioAgendado != null ? solicitacaoForm.horarioAgendado : null}]]*/ null;
+
 
             if (dataAgendadaDiaValue) {
                 document.getElementById('dataAgendadaDia').value = dataAgendadaDiaValue;
-                // Popular novamente para garantir que os horários corretos sejam carregados
-                popularHorarios(); 
+                 popularHorarios(); // Popular novamente para carregar os horários corretos
                 if (horarioAgendadoValue) {
-                    document.getElementById('horarioAgendado').value = horarioAgendadoValue;
+                   // Aguardar um pouco para o select de horários ser populado
+                   setTimeout(function() {
+                      document.getElementById('horarioAgendado').value = horarioAgendadoValue;
+                   }, 100); // Pequeno delay
                 }
+            } else {
+                 popularHorarios(); // Popular mesmo se não houver valor pré-selecionado, para caso de JS habilitado
             }
         });
+
+        // As funções de navegação do formulário multi-etapas (validateAndNext, showSection, etc.)
+        // que estão em script.js ou estavam inline no seu HTML original devem continuar funcionando.
+        // Adaptei a função validateServicoAndNext para o novo contexto.
+
+        function showSection(sectionIdToShow, stepToActivate) {
+            document.querySelectorAll('fieldset').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionIdToShow).style.display = 'block';
+
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.classList.remove('active');
+                if (parseInt(step.dataset.step) < stepToActivate) {
+                    step.classList.add('active'); // Mantém os anteriores ativos
+                }
+            });
+            const currentStepElement = document.querySelector(`.progress-step[data-step="${stepToActivate}"]`);
+            if(currentStepElement) currentStepElement.classList.add('active');
+
+            // Linhas de progresso
+            document.querySelectorAll('.progress-step-line').forEach(line => {
+                 line.style.backgroundColor = 'var(--text-muted)'; // Reset
+            });
+
+            const activeSteps = document.querySelectorAll('.progress-step.active');
+            activeSteps.forEach((activeStep, index) => {
+                if (index < activeSteps.length -1) { // Não para a última linha ativa
+                    let nextSibling = activeStep.nextElementSibling;
+                    while(nextSibling && !nextSibling.classList.contains('progress-step-line')) {
+                        nextSibling = nextSibling.nextElementSibling;
+                    }
+                    if (nextSibling && nextSibling.classList.contains('progress-step-line')) {
+                        nextSibling.style.backgroundColor = 'var(--primary-color)';
+                    }
+                }
+            });
+        }
+
+        function validateAndNext(currentSectionId, nextSectionId, nextStepNumber) {
+            const currentSection = document.getElementById(currentSectionId);
+            const inputs = currentSection.querySelectorAll('input[required], select[required]');
+            let isValid = true;
+            inputs.forEach(input => {
+                if (!input.checkValidity()) {
+                    isValid = false;
+                    input.classList.add('is-invalid'); // Bootstrap class for feedback
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+
+            if (isValid) {
+                showSection(nextSectionId, nextStepNumber);
+            } else {
+                 // Pode-se adicionar uma mensagem de erro geral para a seção aqui
+                 // ou confiar no feedback visual 'is-invalid' e nas mensagens th:error.
+                console.warn("Validação falhou na seção:", currentSectionId);
+            }
+        }
+
+        function validateServicoAndNext() {
+            const checkboxes = document.querySelectorAll('#section-servico input[name="servicoIds"]:checked');
+            const errorMessageDiv = document.getElementById('service-error-message');
+            if (checkboxes.length > 0) {
+                errorMessageDiv.style.display = 'none';
+                showSection('section-agendamento', 4);
+            } else {
+                errorMessageDiv.style.display = 'block';
+            }
+        }
+        
+        function toggleCheckbox(row) {
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            if (checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+        }
 
         /*]]>*/
     </script>
