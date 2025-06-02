@@ -13,16 +13,18 @@ import java.util.List;
 public class AuthInterceptor implements HandlerInterceptor {
 
     // Defina as URLs que são públicas (não exigem login)
-    private static final List<String> PUBLIC_URLS = Arrays.asList(
-        "/login",
-        "/logout",
-        "/solicitacoes/nova", // <--- Adicione a rota de solicitação aqui
-        "/solicitacoes", 
-        "/solicitacoes/confirmar", 
-        "/protocolos/consultar", // Formulário de consulta
-        "/protocolos/detalhes-protocolo-consulta",// Se houver uma rota base para solicitações
-        "/"                   // A página inicial, se for pública
-    );
+	private static final List<String> PUBLIC_URLS = Arrays.asList(
+	        "/login",
+	        "/logout",
+	        "/esqueci-senha",       // Nova URL: Página para solicitar redefinição de senha
+	        "/redefinir-senha",     // Nova URL: Página para redefinir a senha com o token
+	        "/solicitacoes/nova",
+	        "/solicitacoes", 
+	        "/solicitacoes/confirmar", 
+	        "/protocolos/consultar",
+	        "/protocolos/detalhes-protocolo-consulta",
+	        "/"
+	    );
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

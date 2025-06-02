@@ -114,4 +114,24 @@ public class NotificacaoService {
             // Considere adicionar lógica de retry ou notificação de falha aqui.
         }
     }
+    
+    public void sendPasswordResetEmail(String toEmail, String resetLink) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("seu-email@gmail.com"); // Mantenha o seu email configurado aqui
+        message.setTo(toEmail);
+        message.setSubject("Redefinição de Senha - Buenos Autos");
+
+        String emailBody = String.format(
+            "Olá,\n\n" +
+            "Recebemos uma solicitação para redefinir a senha da sua conta na Buenos Autos.\n\n" +
+            "Para redefinir sua senha, clique no link abaixo:\n" +
+            "%s\n\n" +
+            "Este link é válido por 30 minutos. Se você não solicitou a redefinição de senha, por favor, ignore este e-mail.\n\n" +
+            "Atenciosamente,\n" +
+            "Equipe Buenos Autos",
+            resetLink
+        );
+        message.setText(emailBody);
+        sendEmail(message, toEmail, "Redefinição de Senha");
+    }
 }

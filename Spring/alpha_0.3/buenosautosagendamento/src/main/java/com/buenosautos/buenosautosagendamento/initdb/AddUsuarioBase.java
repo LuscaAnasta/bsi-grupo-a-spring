@@ -17,9 +17,10 @@ public class AddUsuarioBase implements CommandLineRunner {
         if (usuarioRepository.count() == 0) {
             System.out.println("Inserindo usuário padrão de login...");
             // Use 'email' e 'senha' aqui
-            Usuario adminUser = new Usuario("admin@buenosautos.com", "123"); // Exemplo de email
+            String user = "bsipr4sem.buenosautos@gmail.com";
+            Usuario adminUser = new Usuario(user, "123"); // Exemplo de email
             usuarioRepository.save(adminUser);
-            System.out.println("Usuário padrão 'admin@buenosautos.com' inserido com sucesso!");
+            System.out.println("Usuário padrão"+user+" inserido com sucesso!");
         } else {
             System.out.println("Usuários já existentes, pulando inserção inicial de usuário.");
         }
