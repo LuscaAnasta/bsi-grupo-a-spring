@@ -66,4 +66,5 @@ public class LoginController {
         model.addAttribute("username", session.getAttribute("loggedInUser"));
         return "admin-dashboard";
     }
+    
 }

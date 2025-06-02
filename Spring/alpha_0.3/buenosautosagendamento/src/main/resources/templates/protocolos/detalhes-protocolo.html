@@ -325,10 +325,17 @@
                     <button type="submit" class="complete-button">Concluir (Finalizado)</button>
                 </form>
 
-                <form th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
-                      onsubmit="return confirm('ATENÇÃO: Tem certeza que deseja CANCELAR este protocolo? Essa ação é irreversível.');"
+                <form id="cancelForm" th:action="@{/protocolos/cancelar/{id}(id=${protocolo.id})}" method="post"
+                      onsubmit="return confirmCancelation();"
                       th:if="${!protocolo.statusProtocolo.name().startsWith('CONCLUIDO') and protocolo.statusProtocolo != T(com.buenosautos.buenosautosagendamento.protocolo.model.Protocolo.Status).CANCELADO}">
-                    <button type="submit" class="cancel-button">Cancelar Protocolo</button>
+                    
+                    <div class="form-group" style="width: 100%; margin-top: 10px;">
+                        <label for="observacoesCancelamento">Observações para o Cliente (Cancelamento):</label>
+                        <textarea id="observacoesCancelamento" name="observacoesCancelamento" rows="3" placeholder="Ex: 'Não foi possível realizar o serviço devido a falta de peças.'"></textarea>
+                    </div>
+                    <div class="button-group" style="width: 100%; justify-content: flex-end;">
+                        <button type="submit" class="cancel-button">Cancelar Protocolo</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -400,6 +407,22 @@
                 // novoServicoPrecoInput.setAttribute('required', '');
             }
         }
+
+
+        function confirmCancelation() {
+            var observacoes = document.getElementById('observacoesCancelamento').value;
+            var confirmMessage = 'ATENÇÃO: Tem certeza que deseja CANCELAR este protocolo? Essa ação é irreversível.';
+
+            if (observacoes.trim() !== '') {
+                confirmMessage += '\n\nObservação para o Cliente:\n"' + observacoes + '"';
+            } else {
+                confirmMessage += '\n\nATENÇÃO: Nenhuma observação de cancelamento foi fornecida. Deseja continuar assim mesmo?';
+            }
+
+            return confirm(confirmMessage);
+        }
+
+        
         document.addEventListener('DOMContentLoaded', toggleNovoServicoFields);
         /*]]>*/
     </script>

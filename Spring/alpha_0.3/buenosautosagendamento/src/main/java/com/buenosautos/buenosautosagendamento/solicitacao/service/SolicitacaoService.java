@@ -52,7 +52,6 @@ public class SolicitacaoService {
     @Autowired
     private DisponibilidadeService disponibilidadeService;
 
-    // Injetar o NotificationService
     @Autowired
     private NotificacaoService notificacaoService;
 
@@ -133,7 +132,7 @@ public class SolicitacaoService {
             salva.getVeiculo().getModelo(),
             salva.getVeiculo().getAno(),
             salva.getVeiculo().getPlaca(),
-            servicosSelecionados.stream().map(ServicoLocal::getId).collect(Collectors.toList()), // Mapeia para IDs dos serviços
+            servicosSelecionados.stream().map(ServicoLocal::getId).collect(Collectors.toList()),
             salva.getDataSolicitacao(),
             salva.getDataAgendada(),
             "CREATED"
@@ -144,10 +143,11 @@ public class SolicitacaoService {
         // --- CHAMADA PARA ENVIAR E-MAIL DE CONFIRMAÇÃO ---
         String servicosNomes = servicosSelecionados.stream()
                                 .map(ServicoLocal::getNome)
-                                .collect(Collectors.joining(", ")); // Concatena os nomes dos serviços
+                                .collect(Collectors.joining(", "));
         String dataFormatada = salva.getDataAgendada().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         String horarioFormatado = salva.getDataAgendada().format(DateTimeFormatter.ofPattern("HH:mm"));
 
+        // *** AQUI ESTÁ A MUDANÇA: sendConfirmationEmail AGORA RECEBE 5 PARÂMETROS ***
         notificacaoService.sendConfirmationEmail(
             salva.getCliente().getEmail(),
             salva.getCliente().getNome(),

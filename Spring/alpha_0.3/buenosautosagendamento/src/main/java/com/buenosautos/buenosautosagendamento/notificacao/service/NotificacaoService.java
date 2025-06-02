@@ -11,10 +11,11 @@ public class NotificacaoService {
     @Autowired
     private JavaMailSender mailSender;
 
-    // Método original de confirmação de agendamento (mantido para a solicitação inicial)
+    // Método de confirmação de agendamento (solicitação inicial)
+    // Usado pelo SolicitacaoService
     public void sendConfirmationEmail(String toEmail, String clientName, String serviceDetails, String appointmentDate, String appointmentTime) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("seu-email@gmail.com");
+        message.setFrom("seu-email@gmail.com"); // Mantenha o seu email configurado aqui
         message.setTo(toEmail);
         message.setSubject("Confirmação de Agendamento - Buenos Autos");
 
@@ -35,9 +36,10 @@ public class NotificacaoService {
     }
 
     // NOVO MÉTODO: E-mail de Agendamento Confirmado pelo Mecânico com Protocolo
+    // Usado pelo ProtocoloService.confirmarProtocolo()
     public void sendAppointmentConfirmedByMechanicEmail(String toEmail, String clientName, String serviceDetails, String appointmentDate, String appointmentTime, String protocolNumber) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("seu-email@gmail.com");
+        message.setFrom("seu-email@gmail.com"); // Mantenha o seu email configurado aqui
         message.setTo(toEmail);
         message.setSubject("Seu Agendamento foi Confirmado! - Buenos Autos");
 
@@ -59,9 +61,10 @@ public class NotificacaoService {
     }
 
     // Método para notificar que o serviço está concluído e aguardando retirada
+    // Usado pelo ProtocoloService.concluirProtocolo()
     public void sendServiceConcludedWaitingPickupEmail(String toEmail, String clientName, String vehicleDetails, String serviceDetails, String protocolNumber) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("seu-email@gmail.com");
+        message.setFrom("seu-email@gmail.com"); // Mantenha o seu email configurado aqui
         message.setTo(toEmail);
         message.setSubject("Seu Veículo Está Pronto para Retirada - Buenos Autos");
 
@@ -77,6 +80,28 @@ public class NotificacaoService {
         );
         message.setText(emailBody);
         sendEmail(message, toEmail, "Serviço Concluído - Aguardando Retirada");
+    }
+
+    // NOVO MÉTODO: Para notificar que o protocolo foi cancelado
+    // Usado pelo ProtocoloService.cancelarProtocolo()
+    public void sendProtocolCanceledEmail(String toEmail, String clientName, String protocolNumber, String vehicleDetails, String reasonForCancellation, String mechanicObservation) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("seu-email@gmail.com"); // Mantenha o seu email configurado aqui
+        message.setTo(toEmail);
+        message.setSubject("Seu Agendamento/Serviço Foi Cancelado - Buenos Autos");
+
+        String emailBody = String.format(
+            "Olá %s,\n\n" +
+            "Informamos que o seu agendamento/serviço referente ao veículo %s (Protocolo: %s) foi CANCELADO.\n\n" +
+            "Motivo do Cancelamento: %s\n\n" +
+            (mechanicObservation != null && !mechanicObservation.trim().isEmpty() ? "Observação do Mecânico: %s\n\n" : "") + // Adiciona observação se não for vazia
+            "Se tiver alguma dúvida ou desejar reagendar, por favor, entre em contato conosco.\n\n" +
+            "Atenciosamente,\n" +
+            "Equipe Buenos Autos",
+            clientName, vehicleDetails, protocolNumber, reasonForCancellation, mechanicObservation // Passe mechanicObservation aqui
+        );
+        message.setText(emailBody);
+        sendEmail(message, toEmail, "Protocolo Cancelado");
     }
 
     // Método auxiliar para enviar o e-mail e tratar exceções

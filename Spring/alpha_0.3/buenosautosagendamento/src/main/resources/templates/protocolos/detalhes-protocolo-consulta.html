@@ -130,7 +130,7 @@
             </div>
             <ol class="service-list" th:unless="${#lists.isEmpty(protocolo.servicosProtocolo)}">
                 <li th:each="item : ${protocolo.servicosProtocolo}">
-                    <strong><span th:text="${item.servicoLocal.nome}"></span></strong> (Código: <span th:text="${item.servicoLocal.codigo}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.servicoLocal.preco, 1, 2)}"></span>)<br>
+                    <strong><span th:text="${item.nomeServico}"></span></strong> (Código: <span th:text="${item.codigoServico}"></span>, Preço: R$ <span th:text="${#numbers.formatDecimal(item.precoServico, 1, 2)}"></span>)<br>
                     <small th:if="${item.observacoes}">Observações: <span th:text="${item.observacoes}"></span></small>
                 </li>
             </ol>

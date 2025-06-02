@@ -47,10 +47,11 @@ public class ProtocoloController {
         model.addAttribute("protocolo", protocolo);
 
         // Opções de status para o dropdown de "Alterar Status"
-        // Filtra CANCELADO e os status de CONCLUSAO_* porque eles terão botões/ações específicas
+        // Filtra CANCELADO e os status de CONCLUSAO_* e CONFIRMADO, pois eles terão botões/ações específicas.
         List<Protocolo.Status> statusOptions = Arrays.stream(Protocolo.Status.values())
                                                      .filter(s -> s != Protocolo.Status.CANCELADO)
-                                                     .filter(s -> !s.name().startsWith("CONCLUIDO_")) // Filtra todos os CONCLUIDO_
+                                                     .filter(s -> !s.name().startsWith("CONCLUIDO_")) 
+                                                     .filter(s -> s != Protocolo.Status.CONFIRMADO) // Exclui CONFIRMADO do dropdown
                                                      .collect(Collectors.toList());
         model.addAttribute("statusOptions", statusOptions);
 
@@ -69,10 +70,10 @@ public class ProtocoloController {
                                         @RequestParam Protocolo.Status novoStatus, 
                                         RedirectAttributes redirectAttributes) {
         try {
-            // Este endpoint não deve ser usado para Cancelar ou Concluir.
+            // Este endpoint não deve ser usado para Cancelar, Concluir ou Confirmar.
             // O serviço já tem validação, mas podemos ser explícitos aqui também.
-            if (novoStatus == Protocolo.Status.CANCELADO || novoStatus.name().startsWith("CONCLUIDO_")) {
-                throw new IllegalArgumentException("Status 'CANCELADO' ou 'CONCLUIDO' devem ser usados através de funções específicas.");
+            if (novoStatus == Protocolo.Status.CANCELADO || novoStatus.name().startsWith("CONCLUIDO_") || novoStatus == Protocolo.Status.CONFIRMADO) {
+                throw new IllegalArgumentException("Status 'CANCELADO', 'CONCLUIDO', ou 'CONFIRMADO' devem ser usados através de funções específicas.");
             }
             protocoloService.atualizarStatusProtocolo(id, novoStatus);
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Status do protocolo atualizado com sucesso!");
@@ -86,11 +87,13 @@ public class ProtocoloController {
         return "redirect:/protocolos/detalhes/{id}";
     }
 
-    // Endpoint para cancelar protocolo (método já existente)
+    // Endpoint para cancelar protocolo
     @PostMapping("/cancelar/{id}")
-    public String cancelarProtocolo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String cancelarProtocolo(@PathVariable Long id, 
+                                    @RequestParam(value = "observacoesCancelamento", required = false) String observacoesCancelamento, // Novo parâmetro
+                                    RedirectAttributes redirectAttributes) {
         try {
-            protocoloService.cancelarProtocolo(id);
+            protocoloService.cancelarProtocolo(id, observacoesCancelamento); // Passando a observação
             redirectAttributes.addFlashAttribute("mensagemSucesso", "Protocolo cancelado com sucesso!");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("mensagemErro", "Erro de validação: " + e.getMessage());
@@ -102,6 +105,22 @@ public class ProtocoloController {
         return "redirect:/protocolos/detalhes/{id}";
     }
     
+    // NOVO MÉTODO: Endpoint para confirmar protocolo (chamará o ProtocoloService.confirmarProtocolo)
+    @PostMapping("/confirmar/{id}")
+    public String confirmarProtocolo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            protocoloService.confirmarProtocolo(id); // Chama o novo método do serviço
+            redirectAttributes.addFlashAttribute("mensagemSucesso", "Protocolo confirmado com sucesso!");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("mensagemErro", "Erro de validação: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.err.println("Erro ao confirmar protocolo: " + e.getMessage());
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("mensagemErro", "Ocorreu um erro inesperado ao confirmar protocolo: " + e.getMessage());
+        }
+        return "redirect:/protocolos/detalhes/{id}";
+    }
+
     // NOVO MÉTODO: Endpoint para concluir protocolo (chamará o ProtocoloService.concluirProtocolo)
     @PostMapping("/concluir/{id}")
     public String concluirProtocolo(@PathVariable Long id, 
